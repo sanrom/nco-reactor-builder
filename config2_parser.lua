@@ -1,4 +1,4 @@
-parser = {}
+local parser = {}
 local util = {}
 local configTypes = {}
 
@@ -295,7 +295,7 @@ end
 --Parse a NCPF file
 function parser.ncpf(filename)
   local configs = {}
-  file = util.loadFile(filename)
+  local file = util.loadFile(filename)
   configs["header"] = parser.parse(file)
   configs["configuration"] = parser.parse(file)
   for i = 1, configs.header["count"] do
