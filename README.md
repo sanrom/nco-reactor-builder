@@ -43,6 +43,8 @@ To function properly, the robot will need access to an inventory below its start
 
 If you want to see the outline of the reactor before building it, run `reactor_builder -o <filename>`. The robot will move along the x, y, and z axes respectively to show the *internal* size of the reactor. The robot requires 1 block additional space around those bounds (where the casing will be).
 
+If your reactor uses multiple fuel types, run with the `-l` flag. This will stop the robot at each level, allowing you to filter the fuel cells before the robot builds over it.
+
 ## Command Syntax
 
 `reactor_builder [-d/g/o/s/I/p] <filename> [<x> <y> <z>]`
