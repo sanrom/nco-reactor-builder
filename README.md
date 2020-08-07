@@ -18,6 +18,8 @@ in OpenComputers to install the scripts!
 
 ## Requirements
 
+Both scirpts are made to run on **Lua 5.3**, and running them on any other version may cause errors or unexpected behavoir. Please make sure that you are running the correct version of Lua before reporting bugs
+
 For the config2 parser, there are no hard requirements, except a lot of ram to load big files
 
 For the reactor builder, a robot with the following components/upgrades are **required**:
