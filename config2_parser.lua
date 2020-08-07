@@ -182,7 +182,7 @@ end
 --UTIL FUNCTIONS
 
 function util.loadFile(filename)
-  file = assert(io.open(filename, "rb"))
+  local file = assert(io.open(filename, "rb"))
   return file
 end
 
