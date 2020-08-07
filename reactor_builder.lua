@@ -1,6 +1,6 @@
 --[[
 NCO Reactor Builder by Sanrom
-v0.1d
+v0.1e
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -442,6 +442,13 @@ local function build(reactor)
 
   --stock up
   stockUp(reactor.startOffset, reactor)
+
+  --move to start offset
+  protectedMove(robot.up, reactor.startOffset.y - 1)
+  protectedTurn(robot.turnRight)
+  protectedMove(robot.forward, reactor.startOffset.z - 1)
+  protectedTurn(robot.turnLeft)
+  protectedMove(robot.forward, reactor.startOffset.x - 1)
 
   --move from chest
   protectedMove(robot.forward, 1)
