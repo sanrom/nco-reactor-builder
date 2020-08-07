@@ -1,6 +1,6 @@
 --[[
 Config2 Parser by Sanrom
-v0.1
+v0.1.0
 
 LINKS:
 NCPF Format: https://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-cuv1sUJBB5aGY/edit#

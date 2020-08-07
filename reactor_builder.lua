@@ -1,6 +1,6 @@
 --[[
 NCO Reactor Builder by Sanrom
-v0.1e
+v0.1.5
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -519,7 +519,7 @@ if ops.l or ops.pauseOnLayer then
 end
 
 local filename = args[1]
-local startOffset = {x = args[2] or 1, y = args[3] or 1, z = args[4] or 1}
+local startOffset = {x = tonumber(args[2]) or 1, y = tonumber(args[3]) or 1, z = tonumber(args[4]) or 1}
 local reactor, msg = loadReactor(filename, startOffset)
 
 --Error checking
