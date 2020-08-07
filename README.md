@@ -1,8 +1,8 @@
 # NuclearCraft Overhaul Reactor Builder
 
-Run
-`wget https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/config2_parser.lua`
-`wget https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/reactor_builder.lua`
+Run<br>
+`wget https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/config2_parser.lua`<br>
+`wget https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/reactor_builder.lua` <br>
 in OpenComputers to install the scripts!
 
 ## Features
@@ -46,16 +46,16 @@ If you want to see the outline of the reactor before building it, run `reactor_b
 
 `reactor_builder [-d/g/o/s/I/p] <filename>`
 
--d/--debug: Enable debug mode, prints additional information
--g/--ghost: Enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space and blocks)
--o/--outline: Trace the outline of the reactor before building anything. Robot will move along x, y and z axis and return home
--s/--stationary/--disableMovement: Disables robot movement (also enables ghost mode)
--I/--disableInvCheck: Disables the inventory check
--p/--disablePrompts: Disables all prompts, defaulting reactor ID to 1. Useful for running programs into output files. If in an error state, will always exit the program
+-d/--debug: Enable debug mode, prints additional information<br>
+-g/--ghost: Enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space and blocks)<br>
+-o/--outline: Trace the outline of the reactor before building anything. Robot will move along x, y and z axis and return home<br>
+-s/--stationary/--disableMovement: Disables robot movement (also enables ghost mode)<br>
+-I/--disableInvCheck: Disables the inventory check<br>
+-p/--disablePrompts: Disables all prompts, defaulting reactor ID to 1. Useful for running programs into output files. If in an error state, will always exit the program<br>
 
 ## Color Status Codes
 
-Red: Error State, check the robot
-Yellow: Returning to inventory to pick up items
-Green: Building normally
-Clear/No Color: Program finished/terminated
+- Red: Error State, check the robot
+- Yellow: Returning to inventory to pick up items
+- Green: Building normally
+- Clear/No Color: Program finished/terminated
