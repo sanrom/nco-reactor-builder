@@ -1,3 +1,13 @@
+--[[
+NCO Reactor Builder by Sanrom
+v0.1d
+
+LINKS:
+NCO: https://github.com/turbodiesel4598/NuclearCraft
+NCPF Format: https://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-cuv1sUJBB5aGY/edit#
+--]]
+
+
 local component = require("component")
 local parser = require("config2_parser")
 local sides = require("sides")
