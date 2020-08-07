@@ -15,6 +15,7 @@ in OpenComputers to install the scripts!
 - [x] NCPF Files (Thiz Reactor Planner)
 - [ ] JSON Files (Hellrage Reactor Planner)
 - [ ] Casing
+- [ ] Automatic cell filtering
 
 ## Requirements
 
@@ -52,6 +53,7 @@ If you want to see the outline of the reactor before building it, run `reactor_b
 -s/--stationary/--disableMovement: Disables robot movement (also enables ghost mode)
 -I/--disableInvCheck: Disables the inventory check
 -p/--disablePrompts: Disables all prompts, defaulting reactor ID to 1. Useful for running programs into output files. If in an error state, will always exit the program
+-l/--pauseOnLayer: pauses the robot on each layer to allow manually filtering cells
 
 ## Color Status Codes
 

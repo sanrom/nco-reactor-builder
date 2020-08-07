@@ -445,6 +445,7 @@ local function build(reactor)
       end
       nextLine(reactor.size.x)
     end
+    if flags.pauseOnLayer then errorState("Pause on layer mode activated. Waiting for user to resume operation") end
     nextLayer(reactor.size.z)
   end
 
@@ -454,13 +455,14 @@ local function build(reactor)
 end
 
 --[[
-SYNTAX: [-d/g/o/s/I/p] <filename>
+SYNTAX: [-d/g/o/s/I/p/l] <filename>
 -d/--debug: enable debug mode, prints more to output
 -g/--ghost: enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space)
 -o/--outline: trace the outline of the reactor before building anything. Robot will move along x, y and z axis and return home
 -s/--stationary/--disableMovement: disables robot movement (also enables ghost mode)
 -I/--disableInvCheck: disables the inventory check
 -p/--disablePrompts: disables all prompts, defaulting reactor ID to 1. Useful for running programs into output files. If in an error state, will always exit the program
+-l/--pauseOnLayer: pauses the robot on each layer to allow manually filtering cells
 --]]
 
 local args, ops = shell.parse(...)
@@ -488,6 +490,10 @@ end
 
 if ops.p or ops.disablePrompts then
   flags.disablePrompts = true
+end
+
+if ops.l or ops.pauseOnLayer then
+  flags.pauseOnLayer = true
 end
 
 local filename = args[1]
