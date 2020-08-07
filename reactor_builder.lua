@@ -70,9 +70,10 @@ end
 
 local function getBlockName(block)
   if not block then return "Air" end
-  local name = map_inverse[block.name .. ":" .. math.round(block.damage)]
+  if not block.name or not block.damage then return "Unknown" end
+  local name = map_inverse[block.name .. ":" .. math.tointeger(block.damage)]
   if name then return name end
-  return "Air"
+  return "Unknown"
 end
 
 --LOAD
@@ -420,7 +421,7 @@ local function getBlock(block, offset, reactor)
     end
 
     errorState("Could not find " .. getBlockName(block))
-  until true
+  until false
 end
 
 local function build(reactor)

@@ -1,8 +1,8 @@
 # NuclearCraft Overhaul Reactor Builder
 
 Run
-`wget https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/config2_parser.lua`
-`wget https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/reactor_builder.lua`
+`wget -f https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/config2_parser.lua`
+`wget -f https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/reactor_builder.lua`
 in OpenComputers to install the scripts!
 
 ## Features
