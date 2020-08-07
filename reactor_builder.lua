@@ -69,18 +69,14 @@ for k, v in pairs(map) do
 end
 
 local function getBlockName(block)
-  if not block then return "Air" end
-  if not block.name or not block.damage then return "Unknown" end
-  local name = map_inverse[block.name .. ":" .. math.tointeger(block.damage)]
-  if name then return name end
-  return "Unknown"
+  return block and (block.name and block.damage and map_inverse[block.name .. ":" .. math.tointeger(block.damage)] or "Unknown") or "Air"
 end
 
 --LOAD
 
-local function loadReactor(filename)
+local function loadReactor(filename, startOffset)
 
-  local reactor = {map = {}, size = {}}
+  local reactor = {map = {}, size = {}, startOffset = startOffset or {x = 1, y = 1, z = 1}}
 
   --Parse the file using config2_parser
   local configs = parser.ncpf(filename)
@@ -118,6 +114,11 @@ local function loadReactor(filename)
   reactor.size.x = configs[id].size[1]
   reactor.size.y = configs[id].size[2]
   reactor.size.z = configs[id].size[3]
+
+  --Check startOffset
+  for k, v in pairs(reactor.startOffset) do
+    if v < 1 or v > reactor.size[k] then return nil, "Start offset is invalid" end
+  end
 
   --Load reactor blocks
   local blockPos = 1
@@ -388,7 +389,7 @@ local function getBlock(block, offset, reactor)
   if flags.debug then print("[INFO] Block not found in local inventory, going back to stock up") end
 
   --Repeat block fetch until block is placed or user exits
-  repeat
+  while true do
     --Go back to base chest
     robot.setLightColor(0xffff00)
     protectedMove(robot.back, offset.x - 1)
@@ -421,7 +422,7 @@ local function getBlock(block, offset, reactor)
     end
 
     errorState("Could not find " .. getBlockName(block))
-  until false
+  end
 end
 
 local function build(reactor)
@@ -430,18 +431,18 @@ local function build(reactor)
   robot.setLightColor(0x00ff00)
 
   --stock up
-  stockUp({x = 1, y = 1, z = 1}, reactor)
+  stockUp(reactor.startOffset, reactor)
 
   --move from chest
   protectedMove(robot.forward, 1)
 
   --build reactor
-  for y = 1, reactor.size.y do
-    for z = 1, reactor.size.z do
-      for x = 1, reactor.size.x do
+  for y = reactor.startOffset.y, reactor.size.y do
+    for z = reactor.startOffset.z, reactor.size.z do
+      for x = reactor.startOffset.x, reactor.size.x do
         local block = reactor.blocks[x][y][z]
         if flags.debug then print(string.format("[BLOCK] x: %d, y: %d, z: %d =>", x, y, z) .. getBlockName(reactor.map[block])) end
-        if true then getBlock(reactor.map[block], {x = x, y = y, z = z}, reactor) end
+        getBlock(reactor.map[block], {x = x, y = y, z = z}, reactor)
         nextBlock()
       end
       nextLine(reactor.size.x)
@@ -456,9 +457,12 @@ local function build(reactor)
 end
 
 --[[
-SYNTAX: [-d/g/o/s/I/p/l] <filename>
+SYNTAX: [-d/g/o/s/I/p/l] <filename> [<x> <y> <z>]
+<filename>: filename of reactor (only ncpf files are supported right now)
+[<x> <y> <z>]: start offset of reactor: useful if program crashed and you want to finish the reactor from x, y, z
+
 -d/--debug: enable debug mode, prints more to output
--g/--ghost: enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space)
+-g/--ghost: enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space and blocks)
 -o/--outline: trace the outline of the reactor before building anything. Robot will move along x, y and z axis and return home
 -s/--stationary/--disableMovement: disables robot movement (also enables ghost mode)
 -I/--disableInvCheck: disables the inventory check
@@ -498,16 +502,12 @@ if ops.l or ops.pauseOnLayer then
 end
 
 local filename = args[1]
-local reactor, msg = loadReactor(filename)
+local startOffset = {x = args[2] or 1, y = args[3] or 1, z = args[4] or 1}
+local reactor, msg = loadReactor(filename, startOffset)
 
 --Error checking
 while not reactor do
   print("[ERROR] " .. msg)
-  print("Continue? [Y/n]")
-  if flags.disablePrompts or io.read() == "n" then os.exit() end
-  print("New Filename: ")
-  filename = io.read()
-  reactor, msg = loadReactor(filename)
 end
 
 if flags.outline then

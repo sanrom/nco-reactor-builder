@@ -45,15 +45,18 @@ If you want to see the outline of the reactor before building it, run `reactor_b
 
 ## Command Syntax
 
-`reactor_builder [-d/g/o/s/I/p] <filename>`
+`reactor_builder [-d/g/o/s/I/p] <filename> [<x> <y> <z>]`
 
--d/--debug: Enable debug mode, prints additional information
--g/--ghost: Enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space and blocks)
--o/--outline: Trace the outline of the reactor before building anything. Robot will move along x, y and z axis and return home
--s/--stationary/--disableMovement: Disables robot movement (also enables ghost mode)
--I/--disableInvCheck: Disables the inventory check
--p/--disablePrompts: Disables all prompts, defaulting reactor ID to 1. Useful for running programs into output files. If in an error state, will always exit the program
--l/--pauseOnLayer: pauses the robot on each layer to allow manually filtering cells
+`<filename>`: filename of reactor (only ncpf files are supported right now)
+`[<x> <y> <z>]`: start offset of reactor: useful if program crashed and you want to finish the reactor from x, y, z
+
+`-d/--debug`: Enable debug mode, prints additional information
+`-g/--ghost`: Enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space and blocks)
+`-o/--outline`: Trace the outline of the reactor before building anything. Robot will move along x, y and z axis and return home
+`-s/--stationary/--disableMovement`: Disables robot movement (also enables ghost mode)
+`-I/--disableInvCheck`: Disables the inventory check
+`-p/--disablePrompts`: Disables all prompts, defaulting reactor ID to 1. Useful for running programs into output files. If in an error state, will always exit the program
+`-l/--pauseOnLayer`: pauses the robot on each layer to allow manually filtering cells
 
 ## Color Status Codes
 
