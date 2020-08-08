@@ -1,16 +1,16 @@
-local parser = {}
-local util = {}
-local configTypes = {}
-
 --[[
 Config2 Parser by Sanrom
-v0.1
+v0.1.0
 
 LINKS:
 NCPF Format: https://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-cuv1sUJBB5aGY/edit#
 Config2 Code: https://github.com/computerneek/SimpleLibrary/tree/master/simplelibrary/config2
 DataInput Ref: https://docs.oracle.com/javase/8/docs/api/java/io/DataInput.html
 --]]
+
+local parser = {}
+local util = {}
+local configTypes = {}
 
 --Config()
 configTypes[1] = function (file)

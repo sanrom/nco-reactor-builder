@@ -1,8 +1,8 @@
 # NuclearCraft Overhaul Reactor Builder
 
 Run
-`wget https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/config2_parser.lua`
-`wget https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/reactor_builder.lua`
+`wget -f https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/config2_parser.lua`
+`wget -f https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/reactor_builder.lua`
 in OpenComputers to install the scripts!
 
 ## Features
@@ -15,6 +15,7 @@ in OpenComputers to install the scripts!
 - [x] NCPF Files (Thiz Reactor Planner)
 - [ ] JSON Files (Hellrage Reactor Planner)
 - [ ] Casing
+- [ ] Automatic cell filtering
 
 ## Requirements
 
@@ -42,16 +43,22 @@ To function properly, the robot will need access to an inventory below its start
 
 If you want to see the outline of the reactor before building it, run `reactor_builder -o <filename>`. The robot will move along the x, y, and z axes respectively to show the *internal* size of the reactor. The robot requires 1 block additional space around those bounds (where the casing will be).
 
+If your reactor uses multiple fuel types, run with the `-l` flag. This will stop the robot at each level, allowing you to filter the fuel cells before the robot builds over it.
+
 ## Command Syntax
 
-`reactor_builder [-d/g/o/s/I/p] <filename>`
+`reactor_builder [-d/g/o/s/I/p] <filename> [<x> <y> <z>]`
 
--d/--debug: Enable debug mode, prints additional information
--g/--ghost: Enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space and blocks)
--o/--outline: Trace the outline of the reactor before building anything. Robot will move along x, y and z axis and return home
--s/--stationary/--disableMovement: Disables robot movement (also enables ghost mode)
--I/--disableInvCheck: Disables the inventory check
--p/--disablePrompts: Disables all prompts, defaulting reactor ID to 1. Useful for running programs into output files. If in an error state, will always exit the program
+`<filename>`: filename of reactor (only ncpf files are supported right now)
+`[<x> <y> <z>]`: start offset of reactor: useful if program crashed and you want to finish the reactor from x, y, z
+
+`-d/--debug`: Enable debug mode, prints additional information
+`-g/--ghost`: Enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space and blocks)
+`-o/--outline`: Trace the outline of the reactor before building anything. Robot will move along x, y and z axis and return home
+`-s/--stationary/--disableMovement`: Disables robot movement (also enables ghost mode)
+`-I/--disableInvCheck`: Disables the inventory check
+`-p/--disablePrompts`: Disables all prompts, defaulting reactor ID to 1. Useful for running programs into output files. If in an error state, will always exit the program
+`-l/--pauseOnLayer`: pauses the robot on each layer to allow manually filtering cells
 
 ## Color Status Codes
 
