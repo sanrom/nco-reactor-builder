@@ -13,7 +13,8 @@ local parser = require("config2_parser")
 local sides = require("sides")
 local shell = require("shell")
 -- local os = require("os")
-local robot = require ("robot")
+local robot = require("robot")
+local event = require("event")
 
 local inv_controller = component.inventory_controller
 
@@ -73,10 +74,34 @@ local map = {
   ["Cryotheum Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 15},
 }
 
+--UTIL
+
+local function errorState(msg)
+  msg = msg or "Unkown Error"
+  robot.setLightColor(0xff0000)
+  io.write("[ERROR] " .. msg .. "\n")
+  io.write("Resume [Y/n]? ")
+  if flags.disablePrompts or string.lower(io.read()) == "n" then 
+    io.write("Are you sure you want to exit the program? This will lose all saved progress!\n")
+    io.write("Type 'yes' to confirm exit of program: ")
+    if flags.disablePrompts or string.lower(io.read()) == "yes" then
+      robot.setLightColor(0x000000)
+      os.exit()
+    end
+  end
+  robot.setLightColor(0x00ff00)
+end
+
 local map_inverse = {}
 for k, v in pairs(map) do
   map_inverse[v.name .. ":" .. v.damage] = k
 end
+
+local function interruptHandler()
+  errorState("User interrupted the program")
+end
+
+event.listen("interrupted", interruptHandler)
 
 local function getBlockName(block)
   return block and (block.name and block.damage and map_inverse[block.name .. ":" .. math.tointeger(block.damage)] or "Unknown") or "Air"
@@ -177,29 +202,13 @@ local function loadReactor(filename, startOffset)
 
   if not flags.disableInvCheck and not flags.disablePrompts then
     print("Continue? [Y/n]")
-    if io.read() == "n" then return nil, "User stopped the process" end
+    if string.lower(io.read()) == "n" then return nil, "User stopped the process" end
   end
 
   return reactor
 end
 
 --MOVEMENT
-
-local function errorState(msg)
-  msg = msg or "Unkown Error"
-  robot.setLightColor(0xff0000)
-  print("[ERROR] " .. msg)
-  print("Resume? [Y/n]")
-  if flags.disablePrompts or io.read() == "n" then 
-    print("Are you sure you want to exit the program? This will lose all saved progress!")
-    print("Type 'yes' to confirm exit of program")
-    if flags.disablePrompts or io.read() == "yes" then
-      robot.setLightColor(0x000000)
-      os.exit()
-    end
-  end
-  robot.setLightColor(0x00ff00)
-end
 
 local function protectedMove(move, steps)
   steps = steps or 1
