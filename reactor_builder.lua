@@ -1,6 +1,6 @@
 --[[
 NCO Reactor Builder by Sanrom
-v0.1.5
+v0.1.6
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -156,15 +156,18 @@ local function loadReactor(filename, startOffset)
   --Print all the reactors available
   for i = 1, configs.header.count do
     if configs[i].metadata then
-      print(string.format("ID: %d, Name: %s, Author: %s", i, configs[i].metadata.Name or "", configs[i].metadata.Author or ""))
+      print(string.format("ID: %2d, Size: %2d x %2d x %2d, Name: %s, Author: %s",
+          i, configs[i].size[1], configs[i].size[2], configs[i].size[3],
+          configs[i].metadata.Name or "", configs[i].metadata.Author or ""))
     else
-      print(string.format("ID: %d", i))
+      print(string.format("ID: %2d, Size: %2d x %2d x %2d", 
+          i, configs[i].size[1], configs[i].size[2], configs[i].size[3]))
     end
   end
 
   --Prompt user to select one of the reactors
   local id = 0
-  print("Please enter the ID of the reactor to load: ")
+  io.write("Please enter the ID of the reactor to load: ")
   id = not flags.disablePrompts and tonumber(io.read()) or 1
   if id < 1 or id > configs.header.count then
     return nil, "ID not valid!"
@@ -328,7 +331,7 @@ local function protectedPlaceBlock()
     repeat
       res, msg = robot.placeDown()
       if not res then
-        errorState(msg)
+        errorState("Error placing block: " .. (msg or "[unknown]"))
       end
     until res
   end
@@ -406,7 +409,7 @@ local function stockUp(offset, reactor)
     if slot then
       local availableSpace = slot.maxSize - slot.size
       if availableSpace > 0 then
-        if flags.debug then print("[INFO] Loooking for " .. availableSpace .. " " .. getBlockName(slot)) end
+        if flags.debug then print("[INFO] Looking for " .. availableSpace .. " " .. getBlockName(slot)) end
         for e = 1, protectedMethod(inv_controller.getInventorySize, sides.bottom) do
           if availableSpace <= 0 then break end
           local v = inv_controller.getStackInSlot(sides.bottom, e)
@@ -543,8 +546,9 @@ local startOffset = {x = tonumber(args[2]) or 1, y = tonumber(args[3]) or 1, z =
 local reactor, msg = loadReactor(filename, startOffset)
 
 --Error checking
-while not reactor do
+if not reactor then
   print("[ERROR] " .. msg)
+  os.exit()
 end
 
 if flags.outline then
