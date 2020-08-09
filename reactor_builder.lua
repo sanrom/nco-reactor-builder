@@ -13,9 +13,12 @@ local parser = require("config2_parser")
 local sides = require("sides")
 local shell = require("shell")
 -- local os = require("os")
-local robot = require("robot")
 local event = require("event")
 
+if not component.isAvailable("robot") then error("This program can only be run from a robot") end
+local robot = require("robot")
+
+if not component.isAvailable("inventory_controller") then error("This program requires an inventory controller to run") end
 local inv_controller = component.inventory_controller
 
 local flags = {}
@@ -107,6 +110,40 @@ local function getBlockName(block)
   return block and (block.name and block.damage and map_inverse[block.name .. ":" .. math.tointeger(block.damage)] or "Unknown") or "Air"
 end
 
+local function loadArgs(...)
+  local args, ops = shell.parse(...)
+
+  if ops.d or ops.debug then
+    flags.debug = true
+  end
+
+  if ops.g or ops.ghost then
+    flags.ghost = true
+  end
+
+  if ops.o or ops.outline then
+    flags.outline = true
+  end
+
+  if ops.s or ops.stationary or ops.disableMovement then
+    flags.ghost = true
+    flags.disableMovement = true
+  end
+
+  if ops.I or ops.disableInvCheck then
+    flags.disableInvCheck = true
+  end
+
+  if ops.p or ops.disablePrompts then
+    flags.disablePrompts = true
+  end
+
+  if ops.l or ops.pauseOnLayer then
+    flags.pauseOnLayer = true
+  end
+  return args
+end
+
 --LOAD
 
 local function loadReactor(filename, startOffset)
@@ -118,7 +155,11 @@ local function loadReactor(filename, startOffset)
 
   --Print all the reactors available
   for i = 1, configs.header.count do
-    print(string.format("ID: %d, Name: %s, Author: %s", i, configs[i].metadata.Name, configs[i].metadata.Author))
+    if configs[i].metadata then
+      print(string.format("ID: %d, Name: %s, Author: %s", i, configs[i].metadata.Name or "", configs[i].metadata.Author or ""))
+    else
+      print(string.format("ID: %d", i))
+    end
   end
 
   --Prompt user to select one of the reactors
@@ -496,37 +537,7 @@ SYNTAX: [-d/g/o/s/I/p/l] <filename> [<x> <y> <z>]
 -l/--pauseOnLayer: pauses the robot on each layer to allow manually filtering cells
 --]]
 
-local args, ops = shell.parse(...)
-
-if ops.d or ops.debug then
-  flags.debug = true
-end
-
-if ops.g or ops.ghost then
-  flags.ghost = true
-end
-
-if ops.o or ops.outline then
-  flags.outline = true
-end
-
-if ops.s or ops.stationary or ops.disableMovement then
-  flags.ghost = true
-  flags.disableMovement = true
-end
-
-if ops.I or ops.disableInvCheck then
-  flags.disableInvCheck = true
-end
-
-if ops.p or ops.disablePrompts then
-  flags.disablePrompts = true
-end
-
-if ops.l or ops.pauseOnLayer then
-  flags.pauseOnLayer = true
-end
-
+local args = loadArgs(...)
 local filename = args[1]
 local startOffset = {x = tonumber(args[2]) or 1, y = tonumber(args[3]) or 1, z = tonumber(args[4]) or 1}
 local reactor, msg = loadReactor(filename, startOffset)
