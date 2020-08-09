@@ -1,8 +1,8 @@
 # NuclearCraft Overhaul Reactor Builder
 
 Run<br>
-`wget -f https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/config2_parser.lua`<br>
-`wget -f https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/reactor_builder.lua`<br>
+`wget -f https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/rb_installer.lua`<br>
+`rb_installer.lua`<br>
 in OpenComputers to install the scripts!
 
 ## Features
@@ -65,6 +65,14 @@ This is what the finished reactor should look like:
 ![Finished Reactor](examples/finishedreactor.png)
 
 ## Command Syntax
+
+### Installer/Updater
+
+`rb_installer [<branch>]`
+
+`[<branch>]`: branch of files to install, defaults to `master`
+
+### Reactor Builder
 
 `reactor_builder [-d/g/o/s/I/p] <filename> [<x> <y> <z>]`
 
