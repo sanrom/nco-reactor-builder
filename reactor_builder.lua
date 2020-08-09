@@ -78,40 +78,40 @@ local map = {
   ["Cryotheum Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 15},
 
   --Coolant Heater 1
-  ["Water Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 0},
-  ["Iron Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 1},
-  ["Redstone Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 2},
-  ["Quartz Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 3},
-  ["Obsidian Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 4},
-  ["Nether Brick Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 5},
-  ["Glowstone Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 6},
-  ["Lapis Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 7},
-  ["Gold Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 8},
-  ["Prismarine Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 9},
-  ["Slime Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 10},
-  ["End Stone Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 11},
-  ["Purpur Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 12},
-  ["Diamond Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 13},
-  ["Emerald Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 14},
-  ["Copper Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 15},
+  ["Standard Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 0},
+  ["Iron Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 1},
+  ["Redstone Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 2},
+  ["Quartz Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 3},
+  ["Obsidian Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 4},
+  ["Nether Brick Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 5},
+  ["Glowstone Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 6},
+  ["Lapis Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 7},
+  ["Gold Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 8},
+  ["Prismarine Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 9},
+  ["Slime Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 10},
+  ["End Stone Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 11},
+  ["Purpur Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 12},
+  ["Diamond Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 13},
+  ["Emerald Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 14},
+  ["Copper Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 15},
 
   --Coolant Heater 2
-  ["Tin Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 0},
-  ["Lead Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 1},
-  ["Boron Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 2},
-  ["Lithium Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 3},
-  ["Magnesium Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 4},
-  ["Manganese Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 5},
-  ["Aluminum Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 6},
-  ["Silver Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 7},
-  ["Fluorite Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 8},
-  ["Villiaumite Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 9},
-  ["Carobbiite Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 10},
-  ["Arsenic Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 11},
-  ["Liquid Nitrogen Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 12},
-  ["Liquid Helium Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 13},
-  ["Enderium Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 14},
-  ["Cryotheum Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 15},
+  ["Tin Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 0},
+  ["Lead Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 1},
+  ["Boron Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 2},
+  ["Lithium Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 3},
+  ["Magnesium Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 4},
+  ["Manganese Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 5},
+  ["Aluminum Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 6},
+  ["Silver Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 7},
+  ["Fluorite Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 8},
+  ["Villiaumite Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 9},
+  ["Carobbiite Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 10},
+  ["Arsenic Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 11},
+  ["Liquid Nitrogen Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 12},
+  ["Liquid Helium Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 13},
+  ["Enderium Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 14},
+  ["Cryotheum Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 15},
 }
 
 --UTIL
@@ -218,7 +218,7 @@ local function loadReactor(filename, startOffset)
   --Check format
   elseif not configs[id].compact then
     return nil, "Only compact format is supported right now. Other formats will be added soon"
-  elseif configs[id].id ~= 1 or configs[id].id ~= 2 then
+  elseif configs[id].id < 1 or configs[id].id > 2 then
     return nil, "Only Overhaul SFRs and MSRs are supported right now. Other types of reactors will be added soon"
   end
 
@@ -547,9 +547,6 @@ local function build(reactor)
   protectedMove(robot.forward, reactor.startOffset.z - 1)
   protectedTurn(robot.turnLeft)
   protectedMove(robot.forward, reactor.startOffset.x - 2)
-
-  --move from chest
-  protectedMove(robot.forward, 1)
 
   --build reactor
   for y = reactor.startOffset.y, reactor.size.y do
