@@ -8,7 +8,7 @@ in OpenComputers to install the scripts!
 ## Features
 
 - [x] Fission SFRs
-- [ ] Fission MSRs
+- [x] Fission MSRs
 - [ ] Turbines
 - [ ] ~~Heat Exchangers~~
 - [ ] ~~Fusion Reactors~~
