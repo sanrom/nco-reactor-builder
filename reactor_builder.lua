@@ -1,6 +1,6 @@
 --[[
 NCO Reactor Builder by Sanrom
-v0.1.8
+v0.2.0
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -25,6 +25,7 @@ local flags = {}
 local map = {
   --General
   ["Fuel Cell"] = {name = "nuclearcraft:solid_fission_cell", damage = 0},
+  ["Fuel Vessel"] = {name = "nuclearcraft:salt_fission_vessel", damage = 0},
   ["Neutron Irradiator"] = {name = "nuclearcraft:fission_irradiator", damage = 0},
   ["Conductor"] = {name = "nuclearcraft:fission_conductor", damage = 0},
 
@@ -75,6 +76,42 @@ local map = {
   ["Liquid Helium Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 13},
   ["Enderium Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 14},
   ["Cryotheum Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 15},
+
+  --Coolant Heater 1
+  ["Water Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 0},
+  ["Iron Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 1},
+  ["Redstone Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 2},
+  ["Quartz Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 3},
+  ["Obsidian Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 4},
+  ["Nether Brick Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 5},
+  ["Glowstone Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 6},
+  ["Lapis Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 7},
+  ["Gold Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 8},
+  ["Prismarine Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 9},
+  ["Slime Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 10},
+  ["End Stone Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 11},
+  ["Purpur Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 12},
+  ["Diamond Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 13},
+  ["Emerald Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 14},
+  ["Copper Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink", damage = 15},
+
+  --Coolant Heater 2
+  ["Tin Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 0},
+  ["Lead Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 1},
+  ["Boron Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 2},
+  ["Lithium Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 3},
+  ["Magnesium Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 4},
+  ["Manganese Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 5},
+  ["Aluminum Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 6},
+  ["Silver Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 7},
+  ["Fluorite Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 8},
+  ["Villiaumite Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 9},
+  ["Carobbiite Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 10},
+  ["Arsenic Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 11},
+  ["Liquid Nitrogen Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 12},
+  ["Liquid Helium Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 13},
+  ["Enderium Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 14},
+  ["Cryotheum Coolant Heater"] = {name = "nuclearcraft:salt_fission_sink2", damage = 15},
 }
 
 --UTIL
@@ -158,11 +195,11 @@ local function loadReactor(filename, startOffset)
   if configs.header.count > 1 then
     for i = 1, configs.header.count do
       if configs[i].metadata then
-        print(string.format("ID: %2d, Size: %2d x %2d x %2d, Name: %s, Author: %s",
+        print(string.format("ID: %2d  Size: %2d x %2d x %2d  Name: %s  Author: %s",
             i, configs[i].size[1], configs[i].size[2], configs[i].size[3],
             configs[i].metadata.Name or "", configs[i].metadata.Author or ""))
       else
-        print(string.format("ID: %2d, Size: %2d x %2d x %2d", 
+        print(string.format("ID: %2d  Size: %2d x %2d x %2d", 
             i, configs[i].size[1], configs[i].size[2], configs[i].size[3]))
       end
     end
@@ -181,8 +218,8 @@ local function loadReactor(filename, startOffset)
   --Check format
   elseif not configs[id].compact then
     return nil, "Only compact format is supported right now. Other formats will be added soon"
-  elseif configs[id].id ~= 1 then
-    return nil, "Only Overhaul SFRs are supported right now. Other types of reactors will be added soon"
+  elseif configs[id].id ~= 1 or configs[id].id ~= 2 then
+    return nil, "Only Overhaul SFRs and MSRs are supported right now. Other types of reactors will be added soon"
   end
 
   --Generate ID map
@@ -505,10 +542,11 @@ local function build(reactor)
 
   --move to start offset
   protectedMove(robot.up, reactor.startOffset.y - 1)
+  protectedMove(robot.forward, 1)
   protectedTurn(robot.turnRight)
   protectedMove(robot.forward, reactor.startOffset.z - 1)
   protectedTurn(robot.turnLeft)
-  protectedMove(robot.forward, reactor.startOffset.x - 1)
+  protectedMove(robot.forward, reactor.startOffset.x - 2)
 
   --move from chest
   protectedMove(robot.forward, 1)
