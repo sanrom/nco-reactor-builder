@@ -1,6 +1,6 @@
 --[[
 NCO Reactor Builder by Sanrom
-v0.1.6
+v0.1.7
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -154,21 +154,27 @@ local function loadReactor(filename, startOffset)
   local configs = parser.ncpf(filename)
 
   --Print all the reactors available
-  for i = 1, configs.header.count do
-    if configs[i].metadata then
-      print(string.format("ID: %2d, Size: %2d x %2d x %2d, Name: %s, Author: %s",
-          i, configs[i].size[1], configs[i].size[2], configs[i].size[3],
-          configs[i].metadata.Name or "", configs[i].metadata.Author or ""))
-    else
-      print(string.format("ID: %2d, Size: %2d x %2d x %2d", 
-          i, configs[i].size[1], configs[i].size[2], configs[i].size[3]))
+  local id = 0
+  if configs.header.count > 1 then
+    for i = 1, configs.header.count do
+      if configs[i].metadata then
+        print(string.format("ID: %2d, Size: %2d x %2d x %2d, Name: %s, Author: %s",
+            i, configs[i].size[1], configs[i].size[2], configs[i].size[3],
+            configs[i].metadata.Name or "", configs[i].metadata.Author or ""))
+      else
+        print(string.format("ID: %2d, Size: %2d x %2d x %2d", 
+            i, configs[i].size[1], configs[i].size[2], configs[i].size[3]))
+      end
     end
+
+    --Prompt user to select one of the reactors
+    id = 0
+    io.write("Please enter the ID of the reactor to load: ")
+    id = not flags.disablePrompts and tonumber(io.read()) or 1
+  else
+    id = 1
   end
 
-  --Prompt user to select one of the reactors
-  local id = 0
-  io.write("Please enter the ID of the reactor to load: ")
-  id = not flags.disablePrompts and tonumber(io.read()) or 1
   if id < 1 or id > configs.header.count then
     return nil, "ID not valid!"
 
@@ -513,14 +519,16 @@ local function build(reactor)
         local block = reactor.blocks[x][y][z]
         if flags.debug then print(string.format("[BLOCK] x: %d, y: %d, z: %d =>", x, y, z) .. getBlockName(reactor.map[block])) end
         getBlock(reactor.map[block], {x = x, y = y, z = z}, reactor)
-        nextBlock()
+        if x < reactor.size.x then nextBlock() end
       end
-      nextLine(reactor.size.x)
+      if z < reactor.size.z then nextLine(reactor.size.x - 1) end
     end
     if flags.pauseOnLayer then errorState("Pause on layer mode activated. Waiting for user to resume operation") end
-    nextLayer(reactor.size.z)
+    if y < reactor.size.y then nextLayer(reactor.size.z - 1) end
   end
 
+  protectedMove(robot.back, 1)
+  protectedMove(robot.down, reactor.size.y - 1)
   print("Finished Building Reactor!")
   robot.setLightColor(0x000000)
 
