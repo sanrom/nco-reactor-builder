@@ -287,8 +287,9 @@ local function protectedTurn(turn)
   end
 end
 
-local function nextLayer(x)
+local function nextLayer(x, z)
   if flags.debug then print("[MOVE] Next Layer") end
+  protectedMove(robot.back, z)
   protectedTurn(robot.turnLeft)
   protectedMove(robot.forward, x)
   protectedTurn(robot.turnRight)
@@ -524,7 +525,7 @@ local function build(reactor)
       if z < reactor.size.z then nextLine(reactor.size.x - 1) end
     end
     if flags.pauseOnLayer then errorState("Pause on layer mode activated. Waiting for user to resume operation") end
-    if y < reactor.size.y then nextLayer(reactor.size.z - 1) end
+    if y < reactor.size.y then nextLayer(reactor.size.z - 1, reactor.size.x - 1) end
   end
 
   protectedMove(robot.back, 1)
