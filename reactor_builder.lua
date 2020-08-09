@@ -1,6 +1,6 @@
 --[[
 NCO Reactor Builder by Sanrom
-v0.1.7
+v0.1.8
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -528,6 +528,10 @@ local function build(reactor)
     if y < reactor.size.y then nextLayer(reactor.size.z - 1, reactor.size.x - 1) end
   end
 
+  protectedMove(robot.back, reactor.size.x - 1)
+  protectedTurn(robot.turnRight)
+  protectedMove(robot.back, reactor.size.z - 1)
+  protectedTurn(robot.turnLeft)
   protectedMove(robot.back, 1)
   protectedMove(robot.down, reactor.size.y - 1)
   print("Finished Building Reactor!")

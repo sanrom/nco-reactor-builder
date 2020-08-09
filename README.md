@@ -41,10 +41,11 @@ The following componets/upgrades are *recommended*:
 ## Setup
 
 ![Demo Bot sitting on top of chest](examples/demobotwithaxes.png)
+In the image above, the blue block represents where the first corner block will be placed. The robot will then proceed to build out the reactor in the three axes listed. The robot requires an extra layer of space at the top of the reactor to place the final layer of blocks. The column above the initial inventory also needs to be clear of any obstructions.
 
 To function properly, the robot will need access to an inventory below its starting position. You can insert extra blocks into this inventory for the robot to pick them up as it needs. If the robot runs out of blocks in it's internal inventory while it is building, it will check that inventory for blocks.
 
-If you want to see the outline of the reactor before building it, run `reactor_builder -o <filename>`. The robot will move along the x, y, and z axes respectively to show the *internal* size of the reactor. The robot requires 1 block additional space around those bounds (where the casing will be).
+If you want to see the outline of the reactor before building it, run `reactor_builder -o <filename>`. The robot will move along the x, y, and z axes respectively to show the *internal* size of the reactor.
 
 If your reactor uses multiple fuel types, run with the `-l` flag. This will stop the robot at each level, allowing you to filter the fuel cells before the robot builds over it.
 
