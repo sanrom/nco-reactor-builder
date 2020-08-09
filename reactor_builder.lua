@@ -114,6 +114,8 @@ local map = {
   ["Cryotheum Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 15},
 }
 
+local id_map = {"fissionSFR", "fissionMSR"}
+
 --UTIL
 
 local function errorState(msg)
@@ -222,8 +224,8 @@ local function loadReactor(filename, startOffset)
     return nil, "Only Overhaul SFRs and MSRs are supported right now. Other types of reactors will be added soon"
   end
 
-  --Generate ID map
-  for i, v in ipairs(configs.configuration.overhaul.fissionSFR.blocks) do
+  --Generate ID map 
+  for i, v in ipairs(configs.configuration.overhaul[id_map[configs[id].id]].blocks) do
     if not map[v.name] then
       error("Missing map entry: " .. v.name)
     else
