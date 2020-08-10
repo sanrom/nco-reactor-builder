@@ -1,14 +1,14 @@
 # NuclearCraft Overhaul Reactor Builder
 
 Run<br>
-`wget -f https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/config2_parser.lua`<br>
-`wget -f https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/reactor_builder.lua`<br>
+`wget -f https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/rb_installer.lua`<br>
+`rb_installer.lua`<br>
 in OpenComputers to install the scripts!
 
 ## Features
 
 - [x] Fission SFRs
-- [ ] Fission MSRs
+- [x] Fission MSRs
 - [ ] Turbines
 - [ ] ~~Heat Exchangers~~
 - [ ] ~~Fusion Reactors~~
@@ -31,6 +31,7 @@ For the reactor builder, a robot with the following components/upgrades are **re
 - Screen
 - Graphics Card
 - Keyboard
+- Internet Card (to download the scripts)
 
 The following componets/upgrades are *recommended*:
 - Multiple Inventory Upgrades: more inventory space on the robot means less back and forth to the storage chest
@@ -40,14 +41,38 @@ The following componets/upgrades are *recommended*:
 ## Setup
 
 ![Demo Bot sitting on top of chest](examples/demobotwithaxes.png)
+In the image above, the blue block represents where the first corner block will be placed. The robot will then proceed to build out the reactor in the three axes listed. The robot requires an extra layer of space at the top of the reactor to place the final layer of blocks. The column above the initial inventory also needs to be clear of any obstructions.
 
 To function properly, the robot will need access to an inventory below its starting position. You can insert extra blocks into this inventory for the robot to pick them up as it needs. If the robot runs out of blocks in it's internal inventory while it is building, it will check that inventory for blocks.
 
-If you want to see the outline of the reactor before building it, run `reactor_builder -o <filename>`. The robot will move along the x, y, and z axes respectively to show the *internal* size of the reactor. The robot requires 1 block additional space around those bounds (where the casing will be).
+If you want to see the outline of the reactor before building it, run `reactor_builder -o <filename>`. The robot will move along the x, y, and z axes respectively to show the *internal* size of the reactor.
 
 If your reactor uses multiple fuel types, run with the `-l` flag. This will stop the robot at each level, allowing you to filter the fuel cells before the robot builds over it.
 
+## Examples
+
+### Overhaul Tutorial SFR
+
+![Overhaul Tutorial SFR](examples/OverhaulTutorialSFR.png)
+
+[Link to NCPF File](examples/OverhaulTutorialSFR.ncpf)
+
+Download the NCPF file to the robot: `wget -f https://raw.githubusercontent.com/sanrom/nco-reactor-builder/master/examples/OverhaulTutorialSFR.ncpf`<br>
+See the outline of the reactor: `reactor_builder -o OverhaulTutorialSFR.ncpf`<br>
+Build the reactor: `reactor_builder OverhaulTutorialSFR.ncpf`
+
+This is what the finished reactor should look like:
+![Finished Reactor](examples/finishedreactor.png)
+
 ## Command Syntax
+
+### Installer/Updater
+
+`rb_installer [<branch>]`
+
+`[<branch>]`: branch of files to install, defaults to `master`
+
+### Reactor Builder
 
 `reactor_builder [-d/g/o/s/I/p] <filename> [<x> <y> <z>]`
 
