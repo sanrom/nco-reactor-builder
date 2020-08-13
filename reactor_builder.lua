@@ -1,6 +1,6 @@
 --[[
 NCO Reactor Builder by Sanrom
-v0.3.0
+v0.3.1
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -26,7 +26,7 @@ local inv_controller = component.inventory_controller
 local flags = {}
 
 local id_map = {[1] = "fissionSFR", [2] = "fissionMSR"}
-local blockmap_map = {[1] = "overhaulSFR", [2] = "overhaulMSR"}
+local blockmap_paths = {[1] = "rblib/blockmaps/overhaulSFR.map", [2] = "rblib/blockmaps/overhaulMSR.map"}
 
 --UTIL
 
@@ -115,7 +115,7 @@ local function loadReactor(filename, startOffset)
   end
 
   --Generate ID map
-  local blockMap = common.util.blockMapLoad(blockmap_map[configs[id].id])
+  local blockMap = common.util.blockMapLoad(blockmap_paths[configs[id].id])
   for i, v in ipairs(configs.configuration.overhaul[id_map[configs[id].id]].blocks) do
     if not blockMap[v.name] then
       error("Missing map entry: " .. v.name)

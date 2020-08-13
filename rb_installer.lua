@@ -47,10 +47,12 @@ else
   downloadFile(repo .. branch .. "/rblib/config2_parser.lua rblib/config2_parser.lua", true)
   downloadFile(repo .. branch .. "/rblib/rb_common.lua rblib/rb_common.lua", true)
   downloadFile(repo .. branch .. "/reactor_builder.lua reactor_builder.lua", true)
+  downloadFile(repo .. branch .. "/turbine_builder.lua turbine_builder.lua", true)
 
   --Don't download blockmaps if people added customisations
-  downloadFile(repo .. branch .. "/rblib/blockmaps/overhaulSFR.lua rblib/blockmaps/overhaulSFR.lua", false)
-  downloadFile(repo .. branch .. "/rblib/blockmaps/overhaulMSR.lua rblib/blockmaps/overhaulMSR.lua", false)
-  downloadFile(repo .. branch .. "/rblib/blockmaps/overhaulTurbine.lua rblib/blockmaps/overhaulTurbine.lua", false)
+  downloadFile(repo .. branch .. "/rblib/blockmaps/overhaulSFR.map rblib/blockmaps/overhaulSFR.map", false)
+  downloadFile(repo .. branch .. "/rblib/blockmaps/overhaulMSR.map rblib/blockmaps/overhaulMSR.map", false)
+  downloadFile(repo .. branch .. "/rblib/blockmaps/overhaulTurbineBlocks.map rblib/blockmaps/overhaulTurbineBlocks.map", false)
+  downloadFile(repo .. branch .. "/rblib/blockmaps/overhaulTurbineBlades.map rblib/blockmaps/overhaulTurbineBlades.map", false)
 
 end
