@@ -30,12 +30,6 @@ local blockmap_paths = {[1] = "rblib/blockmaps/overhaulSFR.map", [2] = "rblib/bl
 
 --UTIL
 
-local function interruptHandler()
-  common.util.errorState("User interrupted the program")
-end
-
-event.listen("interrupted", interruptHandler)
-
 local function loadArgs(...)
   local args, ops = shell.parse(...)
 

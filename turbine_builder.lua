@@ -28,12 +28,6 @@ local blockmap_paths = {blocks = "rblib/blockmaps/overhaulTurbineBlocks.map", bl
 
 --UTIL
 
-local function interruptHandler()
-  common.util.errorState("User interrupted the program")
-end
-
-event.listen("interrupted", interruptHandler)
-
 local function loadArgs(...)
   local args, ops = shell.parse(...)
 
@@ -131,10 +125,10 @@ local function loadTurbine(filename, startOffset)
   local bladeOffset = #turbine.map
   local bladeMap = common.util.blockMapLoad(blockmap_paths.blades)
   for i, v in ipairs(configs.configuration.overhaul.turbine.blades) do
-    if not blockMap[v.name] then
+    if not bladeMap[v.name] then
       error("Missing map entry: " .. v.name)
     else
-      turbine.map[bladeOffset + i] = blockMap[v.name]
+      turbine.map[bladeOffset + i] = bladeMap[v.name]
       turbine.map[bladeOffset + i].count = 0 --Init count of blades to 0
     end
   end
