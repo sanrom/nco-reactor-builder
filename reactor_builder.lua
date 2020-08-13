@@ -1,6 +1,6 @@
 --[[
 NCO Reactor Builder by Sanrom
-v0.2.1
+v0.3.0
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -9,11 +9,13 @@ NCPF Format: https://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-c
 
 
 local component = require("component")
-local parser = require("config2_parser")
 local sides = require("sides")
 local shell = require("shell")
 -- local os = require("os")
 local event = require("event")
+
+local parser = require("rblib.config2_parser")
+local common = require("rblib.rb_common")
 
 if not component.isAvailable("robot") then error("This program can only be run from a robot") end
 local robot = require("robot")
@@ -22,132 +24,17 @@ if not component.isAvailable("inventory_controller") then error("This program re
 local inv_controller = component.inventory_controller
 
 local flags = {}
-local map = {
-  --General
-  ["Fuel Cell"] = {name = "nuclearcraft:solid_fission_cell", damage = 0},
-  ["Fuel Vessel"] = {name = "nuclearcraft:salt_fission_vessel", damage = 0},
-  ["Neutron Irradiator"] = {name = "nuclearcraft:fission_irradiator", damage = 0},
-  ["Conductor"] = {name = "nuclearcraft:fission_conductor", damage = 0},
 
-  --Reflectors
-  ["Beryllium-Carbon Reflector"] = {name = "nuclearcraft:fission_reflector", damage = 0},
-  ["Lead-Steel Reflector"] = {name = "nuclearcraft:fission_reflector", damage = 1},
-
-  --Shields
-  ["Boron-Silver Neutron Shield"] = {name = "nuclearcraft:fission_shield", damage = 0},
-
-  --Moderators
-  ["Graphite Moderator"] = {name = "nuclearcraft:ingot_block", damage = 8},
-  ["Beryllium Moderator"] = {name = "nuclearcraft:ingot_block", damage = 9},
-  ["Heavy Water Moderator"] = {name = "nuclearcraft:heavy_water_moderator", damage = 0},
-
-  --Heat Sink 1
-  ["Water Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 0},
-  ["Iron Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 1},
-  ["Redstone Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 2},
-  ["Quartz Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 3},
-  ["Obsidian Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 4},
-  ["Nether Brick Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 5},
-  ["Glowstone Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 6},
-  ["Lapis Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 7},
-  ["Gold Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 8},
-  ["Prismarine Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 9},
-  ["Slime Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 10},
-  ["End Stone Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 11},
-  ["Purpur Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 12},
-  ["Diamond Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 13},
-  ["Emerald Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 14},
-  ["Copper Heat Sink"] = {name = "nuclearcraft:solid_fission_sink", damage = 15},
-
-  --Heat Sink 2
-  ["Tin Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 0},
-  ["Lead Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 1},
-  ["Boron Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 2},
-  ["Lithium Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 3},
-  ["Magnesium Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 4},
-  ["Manganese Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 5},
-  ["Aluminum Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 6},
-  ["Silver Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 7},
-  ["Fluorite Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 8},
-  ["Villiaumite Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 9},
-  ["Carobbiite Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 10},
-  ["Arsenic Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 11},
-  ["Liquid Nitrogen Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 12},
-  ["Liquid Helium Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 13},
-  ["Enderium Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 14},
-  ["Cryotheum Heat Sink"] = {name = "nuclearcraft:solid_fission_sink2", damage = 15},
-
-  --Coolant Heater 1
-  ["Standard Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 0},
-  ["Iron Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 1},
-  ["Redstone Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 2},
-  ["Quartz Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 3},
-  ["Obsidian Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 4},
-  ["Nether Brick Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 5},
-  ["Glowstone Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 6},
-  ["Lapis Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 7},
-  ["Gold Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 8},
-  ["Prismarine Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 9},
-  ["Slime Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 10},
-  ["End Stone Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 11},
-  ["Purpur Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 12},
-  ["Diamond Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 13},
-  ["Emerald Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 14},
-  ["Copper Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater", damage = 15},
-
-  --Coolant Heater 2
-  ["Tin Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 0},
-  ["Lead Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 1},
-  ["Boron Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 2},
-  ["Lithium Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 3},
-  ["Magnesium Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 4},
-  ["Manganese Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 5},
-  ["Aluminum Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 6},
-  ["Silver Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 7},
-  ["Fluorite Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 8},
-  ["Villiaumite Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 9},
-  ["Carobbiite Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 10},
-  ["Arsenic Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 11},
-  ["Liquid Nitrogen Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 12},
-  ["Liquid Helium Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 13},
-  ["Enderium Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 14},
-  ["Cryotheum Coolant Heater"] = {name = "nuclearcraft:salt_fission_heater2", damage = 15},
-}
-
-local id_map = {"fissionSFR", "fissionMSR"}
+local id_map = {[1] = "fissionSFR", [2] = "fissionMSR"}
+local blockmap_map = {[1] = "overhaulSFR", [2] = "overhaulMSR"}
 
 --UTIL
 
-local function errorState(msg)
-  msg = msg or "Unkown Error"
-  robot.setLightColor(0xff0000)
-  io.write("[ERROR] " .. msg .. "\n")
-  io.write("Resume [Y/n]? ")
-  if flags.disablePrompts or string.lower(io.read()) == "n" then 
-    io.write("Are you sure you want to exit the program? This will lose all saved progress!\n")
-    io.write("Type 'yes' to confirm exit of program: ")
-    if flags.disablePrompts or string.lower(io.read()) == "yes" then
-      robot.setLightColor(0x000000)
-      os.exit()
-    end
-  end
-  robot.setLightColor(0x00ff00)
-end
-
-local map_inverse = {}
-for k, v in pairs(map) do
-  map_inverse[v.name .. ":" .. v.damage] = k
-end
-
 local function interruptHandler()
-  errorState("User interrupted the program")
+  common.util.errorState("User interrupted the program")
 end
 
 event.listen("interrupted", interruptHandler)
-
-local function getBlockName(block)
-  return block and (block.name and block.damage and map_inverse[block.name .. ":" .. math.tointeger(block.damage)] or "Unknown") or "Air"
-end
 
 local function loadArgs(...)
   local args, ops = shell.parse(...)
@@ -180,6 +67,7 @@ local function loadArgs(...)
   if ops.l or ops.pauseOnLayer then
     flags.pauseOnLayer = true
   end
+  
   return args
 end
 
@@ -196,13 +84,15 @@ local function loadReactor(filename, startOffset)
   local id = 0
   if configs.header.count > 1 then
     for i = 1, configs.header.count do
-      if configs[i].metadata then
-        print(string.format("ID: %2d  Size: %2d x %2d x %2d  Name: %s  Author: %s",
-            i, configs[i].size[1], configs[i].size[2], configs[i].size[3],
-            configs[i].metadata.Name or "", configs[i].metadata.Author or ""))
-      else
-        print(string.format("ID: %2d  Size: %2d x %2d x %2d", 
-            i, configs[i].size[1], configs[i].size[2], configs[i].size[3]))
+      if configs[i].id >= 1 and configs[i].id <= 2 then
+        if configs[i].metadata then
+          print(string.format("ID: %2d  Size: %2d x %2d x %2d  Name: %s  Author: %s",
+              i, configs[i].size[1], configs[i].size[2], configs[i].size[3],
+              configs[i].metadata.Name or "", configs[i].metadata.Author or ""))
+        else
+          print(string.format("ID: %2d  Size: %2d x %2d x %2d", 
+              i, configs[i].size[1], configs[i].size[2], configs[i].size[3]))
+        end
       end
     end
 
@@ -224,15 +114,18 @@ local function loadReactor(filename, startOffset)
     return nil, "Only Overhaul SFRs and MSRs are supported right now. Other types of reactors will be added soon"
   end
 
-  --Generate ID map 
+  --Generate ID map
+  local blockMap = common.util.blockMapLoad(blockmap_map[configs[id].id])
   for i, v in ipairs(configs.configuration.overhaul[id_map[configs[id].id]].blocks) do
-    if not map[v.name] then
+    if not blockMap[v.name] then
       error("Missing map entry: " .. v.name)
     else
-      reactor.map[i] = map[v.name]
+      reactor.map[i] = blockMap[v.name]
       reactor.map[i].count = 0 --Init count of blocks to 0
     end
   end
+
+  reactor.map_inverse = common.util.blockMapInverse(blockMap)
 
   --Load reactor size
   reactor.size.x = configs[id].size[1]
@@ -267,8 +160,7 @@ local function loadReactor(filename, startOffset)
   local stacks = 0
   print("Block count: ")
   for i, v in ipairs(reactor.map) do
-    local k = v.name .. ":" .. v.damage
-    print(map_inverse[k] .. ": " .. v.count)
+    print(common.util.getBlockName(v, reactor.map_inverse) .. ": " .. v.count)
     sum = sum + v.count
     stacks = stacks + math.ceil(v.count / 64)
   end
@@ -297,102 +189,9 @@ local function loadReactor(filename, startOffset)
   return reactor
 end
 
---MOVEMENT
+--MOVEMENT: SEE RBUTIL
 
-local function protectedMove(move, steps)
-  steps = steps or 1
-  if not flags.disableMovement then
-    for i = 1, steps do
-      local res, msg
-      repeat
-        res, msg = move()
-        if not res then
-          errorState(msg)
-        end
-      until res
-    end
-  end
-end
-
-local function protectedTurn(turn)
-  if not flags.disableMovement then
-    local res, msg
-    repeat
-      res, msg = turn()
-      if not res then
-        errorState(msg)
-      end
-    until res
-  end
-end
-
-local function nextLayer(x, z)
-  if flags.debug then print("[MOVE] Next Layer") end
-  protectedMove(robot.back, z)
-  protectedTurn(robot.turnLeft)
-  protectedMove(robot.forward, x)
-  protectedTurn(robot.turnRight)
-  protectedMove(robot.up, 1)
-end
-
-local function nextLine(z)
-  if flags.debug then print("[MOVE] Next Line") end
-  protectedMove(robot.back, z) --back z
-  protectedTurn(robot.turnRight) --shift 1 right
-  protectedMove(robot.forward, 1)
-  protectedTurn(robot.turnLeft)
-end
-
-local function nextBlock()
-  if flags.debug then print("[MOVE] Next Block") end
-  protectedMove(robot.forward, 1) --forward 1
-end
-
---TRACE/BUILD
-
-local function traceOutline(reactor)
-
-  protectedMove(robot.forward, 1)
-
-  --X
-  protectedMove(robot.forward, reactor.size.x)
-  protectedMove(robot.back, reactor.size.x)
-
-  --Y
-  protectedMove(robot.up, reactor.size.y)
-  protectedMove(robot.down, reactor.size.y)
-
-  --Z
-  protectedTurn(robot.turnRight)
-  protectedMove(robot.forward, reactor.size.z)
-  protectedMove(robot.back, reactor.size.z)
-  protectedTurn(robot.turnLeft)
-
-  protectedMove(robot.back, 1)
-end
-
-local function protectedPlaceBlock()
-  if not flags.ghost then
-    local res, msg
-    repeat
-      res, msg = robot.placeDown()
-      if not res then
-        errorState("Error placing block: " .. (msg or "[unknown]"))
-      end
-    until res
-  end
-end
-
-local function protectedMethod(method, ...)
-  local res, msg
-  repeat
-    res, msg = method(...)
-    if not res then
-      errorState(msg)
-    end
-  until res
-  return res
-end
+--BUILD
 
 local function stockUp(offset, reactor)
 
@@ -455,12 +254,12 @@ local function stockUp(offset, reactor)
     if slot then
       local availableSpace = slot.maxSize - slot.size
       if availableSpace > 0 then
-        if flags.debug then print("[INFO] Looking for " .. availableSpace .. " " .. getBlockName(slot)) end
-        for e = 1, protectedMethod(inv_controller.getInventorySize, sides.bottom) do
+        if flags.debug then print("[INFO] Looking for " .. availableSpace .. " " .. common.util.getBlockName(slot, reactor.map_inverse)) end
+        for e = 1, common.util.protectedMethod(inv_controller.getInventorySize, sides.bottom) do
           if availableSpace <= 0 then break end
           local v = inv_controller.getStackInSlot(sides.bottom, e)
           if v and slot.name == v.name and slot.damage == v.damage then
-            availableSpace = availableSpace - protectedMethod(inv_controller.suckFromSlot, sides.bottom, e, availableSpace)
+            availableSpace = availableSpace - common.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, e, availableSpace)
           end
         end
       end
@@ -479,7 +278,7 @@ local function getBlock(block, offset, reactor)
   --Check if block is in current slot
   if currentSlot and currentSlot.name == block.name and currentSlot.damage == block.damage then
     if flags.debug then print("[INFO] Found block in slot") end
-    protectedPlaceBlock()
+    common.util.protectedPlaceBlock()
     return
   end
 
@@ -490,7 +289,7 @@ local function getBlock(block, offset, reactor)
     currentSlot = inv_controller.getStackInInternalSlot(i)
     if currentSlot and currentSlot.name == block.name and currentSlot.damage == block.damage then
       robot.select(i)
-      protectedPlaceBlock()
+      common.util.protectedPlaceBlock()
       return
     end
   end
@@ -501,23 +300,23 @@ local function getBlock(block, offset, reactor)
   while true do
     --Go back to base chest
     robot.setLightColor(0xffff00)
-    protectedMove(robot.back, offset.x - 1)
-    protectedTurn(robot.turnRight)
-    protectedMove(robot.back, offset.z - 1)
-    protectedTurn(robot.turnLeft)
-    protectedMove(robot.back, 1)
-    protectedMove(robot.down, offset.y - 1)
+    common.movement.protectedMove(robot.back, offset.x - 1)
+    common.movement.protectedTurn(robot.turnRight)
+    common.movement.protectedMove(robot.back, offset.z - 1)
+    common.movement.protectedTurn(robot.turnLeft)
+    common.movement.protectedMove(robot.back, 1)
+    common.movement.protectedMove(robot.down, offset.y - 1)
 
     --Stock up
     stockUp(offset, reactor)
 
     --Do the same moves, in reverse!
-    protectedMove(robot.up, offset.y - 1)
-    protectedMove(robot.forward, 1)
-    protectedTurn(robot.turnRight)
-    protectedMove(robot.forward, offset.z - 1)
-    protectedTurn(robot.turnLeft)
-    protectedMove(robot.forward, offset.x - 1)
+    common.movement.protectedMove(robot.up, offset.y - 1)
+    common.movement.protectedMove(robot.forward, 1)
+    common.movement.protectedTurn(robot.turnRight)
+    common.movement.protectedMove(robot.forward, offset.z - 1)
+    common.movement.protectedTurn(robot.turnLeft)
+    common.movement.protectedMove(robot.forward, offset.x - 1)
     robot.setLightColor(0x00ff00)
 
     --Again, check if block is in local inv
@@ -525,12 +324,12 @@ local function getBlock(block, offset, reactor)
       currentSlot = inv_controller.getStackInInternalSlot(i)
       if currentSlot and currentSlot.name == block.name and currentSlot.damage == block.damage then
         robot.select(i)
-        protectedPlaceBlock()
+        common.util.protectedPlaceBlock()
         return
       end
     end
 
-    errorState("Could not find " .. getBlockName(block))
+    common.util.errorState("Could not find " .. common.util.getBlockName(block, reactor.map_inverse))
   end
 end
 
@@ -543,41 +342,41 @@ local function build(reactor)
   stockUp(reactor.startOffset, reactor)
 
   --move to start offset
-  protectedMove(robot.up, reactor.startOffset.y - 1)
-  protectedMove(robot.forward, 1)
-  protectedTurn(robot.turnRight)
-  protectedMove(robot.forward, reactor.startOffset.z - 1)
-  protectedTurn(robot.turnLeft)
-  protectedMove(robot.forward, reactor.startOffset.x - 2)
+  common.movement.protectedMove(robot.up, reactor.startOffset.y - 1)
+  common.movement.protectedMove(robot.forward, 1)
+  common.movement.protectedTurn(robot.turnRight)
+  common.movement.protectedMove(robot.forward, reactor.startOffset.z - 1)
+  common.movement.protectedTurn(robot.turnLeft)
+  common.movement.protectedMove(robot.forward, reactor.startOffset.x - 2)
 
   --build reactor
   for y = reactor.startOffset.y, reactor.size.y do
     for z = reactor.startOffset.z, reactor.size.z do
       for x = reactor.startOffset.x, reactor.size.x do
         local block = reactor.blocks[x][y][z]
-        if flags.debug then print(string.format("[BLOCK] x: %d, y: %d, z: %d =>", x, y, z) .. getBlockName(reactor.map[block])) end
+        if flags.debug then print(string.format("[BLOCK] x: %d, y: %d, z: %d =>", x, y, z) .. common.util.getBlockName(reactor.map[block], reactor.map_inverse)) end
         getBlock(reactor.map[block], {x = x, y = y, z = z}, reactor)
-        if x < reactor.size.x then nextBlock() end
+        if x < reactor.size.x then common.movement.nextBlock() end
       end
-      if z < reactor.size.z then nextLine(reactor.size.x - 1) end
+      if z < reactor.size.z then common.movement.nextLine(reactor.size.x - 1) end
     end
-    if flags.pauseOnLayer then errorState("Pause on layer mode activated. Waiting for user to resume operation") end
-    if y < reactor.size.y then nextLayer(reactor.size.z - 1, reactor.size.x - 1) end
+    if flags.pauseOnLayer then common.util.errorState("Pause on layer mode activated. Waiting for user to resume operation") end
+    if y < reactor.size.y then common.movement.nextLayer(reactor.size.z - 1, reactor.size.x - 1) end
   end
 
-  protectedMove(robot.back, reactor.size.x - 1)
-  protectedTurn(robot.turnRight)
-  protectedMove(robot.back, reactor.size.z - 1)
-  protectedTurn(robot.turnLeft)
-  protectedMove(robot.back, 1)
-  protectedMove(robot.down, reactor.size.y - 1)
+  common.movement.protectedMove(robot.back, reactor.size.x - 1)
+  common.movement.protectedTurn(robot.turnRight)
+  common.movement.protectedMove(robot.back, reactor.size.z - 1)
+  common.movement.protectedTurn(robot.turnLeft)
+  common.movement.protectedMove(robot.back, 1)
+  common.movement.protectedMove(robot.down, reactor.size.y - 1)
   print("Finished Building Reactor!")
   robot.setLightColor(0x000000)
 
 end
 
 --[[
-SYNTAX: [-d/g/o/s/I/p/l] <filename> [<x> <y> <z>]
+SYNTAX: reactor_builder [-d/g/o/s/I/p/l] <filename> [<x> <y> <z>]
 <filename>: filename of reactor (only ncpf files are supported right now)
 [<x> <y> <z>]: start offset of reactor: useful if program crashed and you want to finish the reactor from x, y, z
 
@@ -602,7 +401,7 @@ if not reactor then
 end
 
 if flags.outline then
-  traceOutline(reactor)
+  common.movement.traceOutline(reactor)
 else
   build(reactor)
 end
