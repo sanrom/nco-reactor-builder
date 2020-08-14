@@ -78,11 +78,11 @@ local function loadTurbine(filename, startOffset)
     for i = 1, configs.header.count do
       if configs[i].id == 3 then
         if configs[i].metadata then
-          print(string.format("ID: %2d  Length: %2d  Diameter (excl. casing): %2d  Name: %s  Author: %s",
+          print(string.format("ID: %2d  Internal Length: %2d  Diameter (excl. casing): %2d  Name: %s  Author: %s",
               i, configs[i].size[1], configs[i].size[2],
               configs[i].metadata.Name or "", configs[i].metadata.Author or ""))
         else
-          print(string.format("ID: %2d  Length: %2d  Radius (excl. casing): %2d", 
+          print(string.format("ID: %2d  Internal Length: %2d  Radius (excl. casing): %2d", 
               i, configs[i].size[1], configs[i].size[2]))
         end
       end
@@ -137,13 +137,13 @@ local function loadTurbine(filename, startOffset)
   end
 
   --Generate inverse map
-  turbine.map_inverse = common.util.blockMapInverse(turbine.map)
+  turbine.map_inverse = common.util.blockMapInverse(blockMap)
 
   --check turbine dimensions
   local internalDiameter = configs[id].size[1]
   if internalDiameter < 3 then return nil, "Internal Diameter is too small!" end
 
-  local oallLength = configs[id].size[2]
+  local oallLength = configs[id].size[2] + 2
   if oallLength < 3 then return nil, "Turbine length is too small!" end
 
   local bearingDiameter = configs[id].size[3]
