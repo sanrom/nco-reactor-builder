@@ -1,6 +1,6 @@
 --[[[
 NCO Turbine Builder by Sanrom
-v0.1.0
+v0.1.3
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -183,15 +183,18 @@ local function loadTurbine(filename, startOffset)
             or (x == turbine.size.x and (y == 1 or z == 1 or y == turbine.size.y or z == turbine.size.z)) -- back face
             or (z == 1 and (y == 1 or y == turbine.size.y)) or (z == turbine.size.z and (y == 1 or y == turbine.size.y)) then -- x parallel axes
           turbine.blocks[x][y][z] = 1 --Casing
+          turbine.map[1] = turbine.map[1] + 1 --Increment block count
 
         --Casing Faces
         elseif x == 1 or y == 1 or x == turbine.size.x or y == turbine.size.y then
           turbine.blocks[x][y][z] = 1 --Casing
+          turbine.map[1] = turbine.map[1] + 1 --Increment block count
 
         --Coil Faces
         elseif z == 1 or z == turbine.size.z then
           local coilId = configs[id].coils[coilPos]
           turbine.blocks[x][y][z] = coilId == 0 and 1 or coilOffset + coilId
+          if coilId ~= 0 then turbine.map[coilOffset + coilId] = turbine.map[coilOffset + coilId] + 1 end--Increment block count
           coilPos = coilPos + 1
 
         --Inside
@@ -200,12 +203,14 @@ local function loadTurbine(filename, startOffset)
           --Shaft
           if (x >= turbine.shaft.min and x <= turbine.shaft.max) and (y >= turbine.shaft.min and y <= turbine.shaft.max) then
             turbine.blocks[x][y][z] = 3
+            turbine.map[3] = turbine.map[3] + 1 --Increment block count
 
           --Blade
           elseif (x < turbine.shaft.min or x > turbine.shaft.max) and (y >= turbine.shaft.min and y <= turbine.shaft.max)
               or (y < turbine.shaft.min or y > turbine.shaft.max) and (x >= turbine.shaft.min and x <= turbine.shaft.max) then
             local bladeId = configs[id].blades[z - 1]
             turbine.blocks[x][y][z] = bladeId == 0 and 0 or bladeOffset + bladeId
+            if bladeId ~= 0 then turbine.map[bladeOffset + bladeId] = turbine.map[bladeOffset + bladeId] + 1 end--Increment block count
 
           --Air
           else
