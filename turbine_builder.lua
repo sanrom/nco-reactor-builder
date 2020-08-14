@@ -110,9 +110,9 @@ local function loadTurbine(filename, startOffset)
   turbine.map[1] = blockMap["Turbine Casing"]
   turbine.map[1].count = 0
   turbine.map[2] = blockMap["Turbine Glass"]
-  turbine.map[1].count = 0
+  turbine.map[2].count = 0
   turbine.map[3] = blockMap["Rotor Shaft"]
-  turbine.map[1].count = 0
+  turbine.map[3].count = 0
 
   local coilOffset = #turbine.map
   for i, v in ipairs(configs.configuration.overhaul.turbine.coils) do
@@ -182,37 +182,33 @@ local function loadTurbine(filename, startOffset)
         if (x == 1 and (y == 1 or z == 1 or y == turbine.size.y or z == turbine.size.z)) --Check for corners and edges of front
             or (x == turbine.size.x and (y == 1 or z == 1 or y == turbine.size.y or z == turbine.size.z)) -- back face
             or (z == 1 and (y == 1 or y == turbine.size.y)) or (z == turbine.size.z and (y == 1 or y == turbine.size.y)) then -- x parallel axes
-          if flags.debug then print(string.format("[MAP] x: %d, y: %d, z: %d => ", x, y, z) .. "Frame") end
           turbine.blocks[x][y][z] = 1 --Casing
 
         --Casing Faces
         elseif x == 1 or y == 1 or x == turbine.size.x or y == turbine.size.y then
-          if flags.debug then print(string.format("[MAP] x: %d, y: %d, z: %d => ", x, y, z) .. "Casing Face") end
           turbine.blocks[x][y][z] = 1 --Casing
 
         --Coil Faces
         elseif z == 1 or z == turbine.size.z then
-          if (x >= turbine.shaft.min and x <= turbine.shaft.max) and (y >= turbine.shaft.min and y <= turbine.shaft.max) then
-            if flags.debug then print(string.format("[MAP] x: %d, y: %d, z: %d => ", x, y, z) .. "Bearing") end
-          else
-            if flags.debug then print(string.format("[MAP] x: %d, y: %d, z: %d => ", x, y, z) .. "Coil") end
-          end
           local coilId = configs[id].coils[coilPos]
           turbine.blocks[x][y][z] = coilId == 0 and 1 or coilOffset + coilId
           coilPos = coilPos + 1
 
         --Inside
         else
+
+          --Shaft
           if (x >= turbine.shaft.min and x <= turbine.shaft.max) and (y >= turbine.shaft.min and y <= turbine.shaft.max) then
-            if flags.debug then print(string.format("[MAP] x: %d, y: %d, z: %d => ", x, y, z) .. "Shaft") end
-            turbine.blocks[x][y][z] = 3 --Shaft
+            turbine.blocks[x][y][z] = 3
+
+          --Blade
           elseif (x < turbine.shaft.min or x > turbine.shaft.max) and (y >= turbine.shaft.min and y <= turbine.shaft.max)
               or (y < turbine.shaft.min or y > turbine.shaft.max) and (x >= turbine.shaft.min and x <= turbine.shaft.max) then
-            if flags.debug then print(string.format("[MAP] x: %d, y: %d, z: %d => ", x, y, z) .. "Blade") end
             local bladeId = configs[id].blades[z - 1]
             turbine.blocks[x][y][z] = bladeId == 0 and 0 or bladeOffset + bladeId
+
+          --Air
           else
-            if flags.debug then print(string.format("[MAP] x: %d, y: %d, z: %d => ", x, y, z) .. "Air") end
             turbine.blocks[x][y][z] = 0
           end
         end
@@ -231,8 +227,7 @@ local function loadTurbine(filename, startOffset)
   local stacks = 0
   print("Block count: ")
   for i, v in ipairs(turbine.map) do
-    local k = v.name .. ":" .. v.damage
-    print(common.util.getBlockName(k, turbine.map_inverse) .. ": " .. v.count)
+    print(common.util.getBlockName(v, turbine.map_inverse) .. ": " .. v.count)
     sum = sum + v.count
     stacks = stacks + math.ceil(v.count / 64)
   end
