@@ -1,6 +1,6 @@
 --[[[
 NCO Turbine Builder by Sanrom
-v0.1.5
+v0.1.6
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -160,7 +160,7 @@ local function loadTurbine(filename, startOffset)
 
   if (internalDiameter % 2 == 0 and bearingDiameter % 2 == 0) 
         or (internalDiameter % 2 == 1 and bearingDiameter % 2 == 1) then
-    turbine.shaft.center = (internalDiameter + 1) / 2
+    turbine.shaft.center = ((internalDiameter + 1) / 2) + 1 --Add one for outer diameter compensation
     turbine.shaft.min = turbine.shaft.center - ((bearingDiameter - 1) / 2)
     turbine.shaft.max = turbine.shaft.center + ((bearingDiameter - 1) / 2)
   else
@@ -193,8 +193,13 @@ local function loadTurbine(filename, startOffset)
         --Coil Faces
         elseif z == 1 or z == turbine.size.z then
           local coilId = configs[id].coils[coilPos]
-          turbine.blocks[x][y][z] = coilId == 0 and 1 or coilOffset + coilId
-          if coilId ~= 0 then turbine.map[coilOffset + coilId].count = turbine.map[coilOffset + coilId].count + 1 end--Increment block count
+          if coilId ~= 0 then
+            turbine.blocks[x][y][z] = coilOffset + coilId
+            turbine.map[coilOffset + coilId].count = turbine.map[coilOffset + coilId].count + 1 --Increment block count
+          else 
+            turbine.blocks[x][y][z] = 1
+            turbine.map[1].count = turbine.map[1].count + 1
+          end
           coilPos = coilPos + 1
 
         --Inside
@@ -209,8 +214,12 @@ local function loadTurbine(filename, startOffset)
           elseif (x < turbine.shaft.min or x > turbine.shaft.max) and (y >= turbine.shaft.min and y <= turbine.shaft.max)
               or (y < turbine.shaft.min or y > turbine.shaft.max) and (x >= turbine.shaft.min and x <= turbine.shaft.max) then
             local bladeId = configs[id].blades[z - 1]
-            turbine.blocks[x][y][z] = bladeId == 0 and 0 or bladeOffset + bladeId
-            if bladeId ~= 0 then turbine.map[bladeOffset + bladeId].count = turbine.map[bladeOffset + bladeId].count + 1 end--Increment block count
+            if bladeId ~= 0 then
+              turbine.blocks[x][y][z] = bladeOffset + bladeId
+              turbine.map[bladeOffset + bladeId].count = turbine.map[bladeOffset + bladeId].count + 1 --Increment block count
+            else
+              turbine.blocks[x][y][z] = 0
+            end
 
           --Air
           else
