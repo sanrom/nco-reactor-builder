@@ -133,14 +133,17 @@ local function loadTurbine(filename, startOffset)
     end
   end
 
+  --Generate inverse map
+  turbine.map_inverse = common.util.blockMapInverse(turbine.map)
+
   --check turbine dimensions
-  local internalDiameter = configs.size[1]
+  local internalDiameter = configs[id].size[1]
   if internalDiameter < 3 then return nil, "Internal Diameter is too small!" end
 
-  local oallLength = configs.size[2]
+  local oallLength = configs[id].size[2]
   if oallLength < 3 then return nil, "Turbine length is too small!" end
 
-  local bearingDiameter = configs.size[3]
+  local bearingDiameter = configs[id].size[3]
   if bearingDiameter < 1 then return nil, "Bearing diameter is too small" end
   if bearingDiameter > (internalDiameter - 2) then return nil, "Bearing diameter is too large" end
 
@@ -150,6 +153,8 @@ local function loadTurbine(filename, startOffset)
   turbine.size.y = externalDiameter
   turbine.size.z = oallLength
 
+  if flags.debug then print(string.format("[INFO] Turbine Dimensions: x = %2d, y = %2d, z = %2d", turbine.size.x, turbine.size.y, turbine.size.z)) end
+
   if (internalDiameter % 2 == 0 and bearingDiameter % 2 == 0) 
         or (internalDiameter % 2 == 1 and bearingDiameter % 2 == 1) then
     turbine.shaft.center = (internalDiameter + 1) / 2
@@ -158,6 +163,8 @@ local function loadTurbine(filename, startOffset)
   else
     return nil, "Internal diameter and bearing diameter are not compatible"
   end
+
+  if flags.debug then print(string.format("[INFO] Turbine Shaft Dimensions: c = %2d, >= %2d, <= %2d", turbine.shaft.center, turbine.shaft.min, turbine.shaft.max)) end
 
   --Generate Block map
   local coilPos = 1
@@ -182,7 +189,7 @@ local function loadTurbine(filename, startOffset)
 
         --Coil Faces
         elseif z == 1 or z == turbine.size.z then
-          if (x >= turbine.shaft.min and x <= turbine.shaft.max) and (x >= turbine.shaft.min and x <= turbine.shaft.max) then
+          if (x >= turbine.shaft.min and x <= turbine.shaft.max) and (y >= turbine.shaft.min and y <= turbine.shaft.max) then
             if flags.debug then print(string.format("[MAP] x: %d, y: %d, z: %d => ", x, y, z) .. "Bearing") end
           else
             if flags.debug then print(string.format("[MAP] x: %d, y: %d, z: %d => ", x, y, z) .. "Coil") end
@@ -193,10 +200,11 @@ local function loadTurbine(filename, startOffset)
 
         --Inside
         else
-          if (x >= turbine.shaft.min and x <= turbine.shaft.max) and (x >= turbine.shaft.min and x <= turbine.shaft.max) then
+          if (x >= turbine.shaft.min and x <= turbine.shaft.max) and (y >= turbine.shaft.min and y <= turbine.shaft.max) then
             if flags.debug then print(string.format("[MAP] x: %d, y: %d, z: %d => ", x, y, z) .. "Shaft") end
             turbine.blocks[x][y][z] = 3 --Shaft
-          elseif (x >= turbine.shaft.min or x <= turbine.shaft.max) or (x >= turbine.shaft.min or x <= turbine.shaft.max) then
+          elseif (x < turbine.shaft.min or x > turbine.shaft.max) and (y >= turbine.shaft.min and y <= turbine.shaft.max)
+              or (y < turbine.shaft.min or y > turbine.shaft.max) and (x >= turbine.shaft.min and x <= turbine.shaft.max) then
             if flags.debug then print(string.format("[MAP] x: %d, y: %d, z: %d => ", x, y, z) .. "Blade") end
             local bladeId = configs[id].blades[z - 1]
             turbine.blocks[x][y][z] = bladeId == 0 and 0 or bladeOffset + bladeId
@@ -215,32 +223,32 @@ local function loadTurbine(filename, startOffset)
     if v < 1 or v > turbine.size[k] then return nil, "Start offset is invalid" end
   end
 
-  --Check block count and inv size with user
-  -- local sum = 0
-  -- local stacks = 0
-  -- print("Block count: ")
-  -- for i, v in ipairs(turbine.map) do
-  --   local k = v.name .. ":" .. v.damage
-  --   print(map_inverse[k] .. ": " .. v.count)
-  --   sum = sum + v.count
-  --   stacks = stacks + math.ceil(v.count / 64)
-  -- end
+  -- Check block count and inv size with user
+  local sum = 0
+  local stacks = 0
+  print("Block count: ")
+  for i, v in ipairs(turbine.map) do
+    local k = v.name .. ":" .. v.damage
+    print(common.util.getBlockName(k, turbine.map_inverse) .. ": " .. v.count)
+    sum = sum + v.count
+    stacks = stacks + math.ceil(v.count / 64)
+  end
 
-  -- local maxInvSlots = math.max(stacks, #turbine.map)
-  -- print("Total types of blocks: " .. #turbine.map)
-  -- print("Total number of blocks: " .. sum)
-  -- print("Number of inventory slots required: " .. maxInvSlots)
+  local maxInvSlots = math.max(stacks, #turbine.map)
+  print("Total types of blocks: " .. #turbine.map)
+  print("Total number of blocks: " .. sum)
+  print("Number of inventory slots required: " .. maxInvSlots)
 
-  -- local robotInvSize = robot.inventorySize()
-  -- if robotInvSize == 0 and not flags.disableInvCheck then return nil, "Robot does not have any inventory slots!" end
+  local robotInvSize = robot.inventorySize()
+  if robotInvSize == 0 and not flags.disableInvCheck then return nil, "Robot does not have any inventory slots!" end
 
-  -- if robotInvSize < maxInvSlots then
-  --   local externalInvSize, msg = inv_controller.getInventorySize(sides.down)
-  --   if not externalInvSize and not flags.disableInvCheck then return nil, "External Inventory Error: " .. msg end
-  --   if (robotInvSize + externalInvSize) < maxInvSlots then
-  --     print("[WARN] Available inventory size may be too small.")
-  --   end
-  -- end
+  if robotInvSize < maxInvSlots then
+    local externalInvSize, msg = inv_controller.getInventorySize(sides.down)
+    if not externalInvSize and not flags.disableInvCheck then return nil, "External Inventory Error: " .. msg end
+    if (robotInvSize + externalInvSize) < maxInvSlots then
+      print("[WARN] Available inventory size may be too small.")
+    end
+  end
 
   if not flags.disableInvCheck and not flags.disablePrompts then
     print("Continue? [Y/n]")
