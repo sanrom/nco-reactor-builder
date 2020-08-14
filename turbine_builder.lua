@@ -108,8 +108,11 @@ local function loadTurbine(filename, startOffset)
   local blockMap = common.util.blockMapLoad(blockmap_paths.blocks)
 
   turbine.map[1] = blockMap["Turbine Casing"]
+  turbine.map[1].count = 0
   turbine.map[2] = blockMap["Turbine Glass"]
+  turbine.map[1].count = 0
   turbine.map[3] = blockMap["Rotor Shaft"]
+  turbine.map[1].count = 0
 
   local coilOffset = #turbine.map
   for i, v in ipairs(configs.configuration.overhaul.turbine.coils) do
@@ -178,7 +181,7 @@ local function loadTurbine(filename, startOffset)
         --Frame
         if (x == 1 and (y == 1 or z == 1 or y == turbine.size.y or z == turbine.size.z)) --Check for corners and edges of front
             or (x == turbine.size.x and (y == 1 or z == 1 or y == turbine.size.y or z == turbine.size.z)) -- back face
-            or (z == 1 and (y == 1 or y == turbine.size.y)) or (z == turbine.size.z and (y == 1 or turbine.size.y)) then -- x parallel axes
+            or (z == 1 and (y == 1 or y == turbine.size.y)) or (z == turbine.size.z and (y == 1 or y == turbine.size.y)) then -- x parallel axes
           if flags.debug then print(string.format("[MAP] x: %d, y: %d, z: %d => ", x, y, z) .. "Frame") end
           turbine.blocks[x][y][z] = 1 --Casing
 
