@@ -1,6 +1,6 @@
 --[[[
 NCO Turbine Builder by Sanrom
-v0.1.6
+v0.1.7
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
