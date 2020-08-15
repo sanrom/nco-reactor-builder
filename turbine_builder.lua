@@ -57,8 +57,15 @@ local function loadArgs(...)
   end
 
   if ops.glass then
-    flags.glass = true
+    flags.glass.front = true
+    flags.glass.back = true
+    flags.glass.top = true
   end
+
+  if ops["glass-top"] then flags.glass.top = true end
+  if ops["glass-bottom"] then flags.glass.bottom = true end
+  if ops["glass-front"] then flags.glass.front = true end
+  if ops["glass-back"] then flags.glass.back = true end
 
   return args
 end
@@ -187,12 +194,19 @@ local function loadTurbine(filename, startOffset)
 
         --Casing Faces
         elseif x == 1 or y == 1 or x == turbine.size.x or y == turbine.size.y then
-          turbine.blocks[x][y][z] = 1 --Casing
-          turbine.map[1].count = turbine.map[1].count + 1 --Increment block count
+          local faceBlock = 1 --Set block
+          --Glass logic
+          if x == 1 and flags.glass.front then faceBlock = 2 end
+          if x == turbine.size.x and flags.glass.back then faceBlock = 2 end
+          if y == 1 and flags.glass.bottom then faceBlock = 2 end
+          if y == turbine.size.y and flags.glass.top then faceBlock = 2 end
+
+          turbine.blocks[x][y][z] = faceBlock --Casing
+          turbine.map[faceBlock].count = turbine.map[faceBlock].count + 1 --Increment block count
 
         --Coil Faces
         elseif z == 1 or z == turbine.size.z then
-          local coilId = configs[id].coils[coilPos]
+          local coilId = configs[id].coils[coilPos + (z == turbine.size.z and math.tointeger(#configs[id].coils / 2) or 0)]
           if coilId ~= 0 then
             turbine.blocks[x][y][z] = coilOffset + coilId
             turbine.map[coilOffset + coilId].count = turbine.map[coilOffset + coilId].count + 1 --Increment block count
@@ -463,6 +477,8 @@ SYNTAX: turbine_builder [-d/g/o/s/I/p/l] <filename> [<x> <y> <z>]
 -s/--stationary/--disableMovement: disables robot movement (also enables ghost mode)
 -I/--disableInvCheck: disables the inventory check
 -p/--disablePrompts: disables all prompts, defaulting turbine ID to 1. Useful for running programs into output files. If in an error state, will always exit the program
+--glass: Use glass for front, back and top faces of turbine. Equivalent to using --glass-front --glass-back --glass-top
+--glass-{front|back|top|bottom}: Use glass instead of wall for specified turbine face.
 --]]
 
 local args = loadArgs(...)
