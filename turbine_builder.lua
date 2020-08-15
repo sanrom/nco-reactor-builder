@@ -292,11 +292,29 @@ local function stockUp(offset, turbine)
   local invSize = robot.inventorySize()
   local blockStacks = {}
 
+  if flags.debug then print("[INFO] Emptying Slots") end
+
+  --Unload inventory if possible
+  for i = 1, invSize do
+    robot.select(i)
+    local slot = inv_controller.getStackInInternalSlot(i)
+    if slot then
+      for e = 1, common.util.protectedMethod(inv_controller.getInventorySize, sides.bottom) do
+        local v = inv_controller.getStackInSlot(sides.bottom, e)
+        if not v or v.name == slot.name and v.damage == slot.damage then
+          common.util.protectedMethod(inv_controller.dropIntoSlot, sides.bottom, e, math.min(slot.size, (v.maxSize - v.size)))
+          break
+        end
+      end
+    end
+  end
+
   if flags.debug then print("[INFO] Indexing Internal Slots") end
 
-  --Count/Load already occupied slots
+  --Count/Load still occupied slots
   local availableSlots = invSize
   for i = 1, invSize do
+    robot.select(i)
     local slot = inv_controller.getStackInInternalSlot(i)
     if slot then
       blockStacks[i] = slot
@@ -337,12 +355,12 @@ local function stockUp(offset, turbine)
     if full then break end
   end
 
-  if flags.debug then print("[INFO] Finished future block map") end
   if flags.debug then print("[INFO] Loading Inventory") end
 
   --Fill up all slots to max from external inv
   for i = 1, invSize do
     local slot = blockStacks[i]
+    robot.select(i)
     if slot then
       local availableSpace = slot.maxSize - slot.size
       if availableSpace > 0 then
@@ -359,6 +377,8 @@ local function stockUp(offset, turbine)
   end
 
   if flags.debug then print("[INFO] Done Loading Inventory") end
+
+  robot.select(1) --go back to first slot
 end
 
 local function getBlock(block, offset, turbine)
