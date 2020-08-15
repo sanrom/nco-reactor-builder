@@ -56,6 +56,7 @@ local function loadArgs(...)
     flags.disablePrompts = true
   end
 
+  flags.glass = {}
   if ops.glass then
     flags.glass.front = true
     flags.glass.back = true
@@ -206,7 +207,7 @@ local function loadTurbine(filename, startOffset)
 
         --Coil Faces
         elseif z == 1 or z == turbine.size.z then
-          local coilId = configs[id].coils[coilPos + (z == turbine.size.z and math.tointeger(#configs[id].coils / 2) or 0)]
+          local coilId = configs[id].coils[coilPos + (z == turbine.size.z and math.floor(#configs[id].coils / 2) or 0)]
           if coilId ~= 0 then
             turbine.blocks[x][y][z] = coilOffset + coilId
             turbine.map[coilOffset + coilId].count = turbine.map[coilOffset + coilId].count + 1 --Increment block count
@@ -214,7 +215,7 @@ local function loadTurbine(filename, startOffset)
             turbine.blocks[x][y][z] = 1
             turbine.map[1].count = turbine.map[1].count + 1
           end
-          coilPos = coilPos + 1
+          coilPos = coilPos + (z == turbine.size.z and 1 or 0)
 
         --Inside
         else
