@@ -9,13 +9,16 @@ in OpenComputers to install the scripts!
 
 - [x] Fission SFRs
 - [x] Fission MSRs
-- [ ] Turbines
+- [x] Turbines
 - [ ] ~~Heat Exchangers~~
 - [ ] ~~Fusion Reactors~~
 - [x] NCPF Files (Thiz Reactor Planner)
 - [ ] JSON Files (Hellrage Reactor Planner)
-- [ ] Casing
+- [ ] Casing for Reactors
+- [x] Casing for Turbines
 - [ ] Automatic cell filtering
+- [x] Direct download from Google Drive, Dropbox
+- [x] Support for addons
 
 ## Requirements
 
@@ -72,6 +75,17 @@ This is what the finished reactor should look like:
 
 `[<branch>]`: branch of files to install, defaults to `master`
 
+#### Cloud Download Utility
+
+`rb_installer -d [-f] {--google-drive|--dropbox} <id> [<filename>]`
+
+`<id>`: see below for requirements for each cloud service
+`[<filename>]`: filename to save to, defaults to `reactor.ncpf`
+
+`--googleDrive`: file must be public, id is fileid
+`--dropbox`: file must be public, id is everything after /s/
+`-f`: Force download, overwrites existing files
+
 ### Reactor Builder
 
 `reactor_builder [-d/g/o/s/I/p] <filename> [<x> <y> <z>]`
@@ -87,9 +101,29 @@ This is what the finished reactor should look like:
 `-p/--disablePrompts`: Disables all prompts, defaulting reactor ID to 1. Useful for running programs into output files. If in an error state, will always exit the program<br>
 `-l/--pauseOnLayer`: pauses the robot on each layer to allow manually filtering cells
 
+### Turbine Builder
+
+`reactor_builder [-d/g/o/s/I/p] <filename> [<x> <y> <z>]`
+
+`<filename>`: filename of reactor (only ncpf files are supported right now)<br>
+`[<x> <y> <z>]`: start offset of reactor: useful if program crashed and you want to finish the reactor from x, y, z
+
+`-d/--debug`: Enable debug mode, prints additional information<br>
+`-g/--ghost`: Enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space and blocks)<br>
+`-o/--outline`: Trace the outline of the reactor before building anything. Robot will move along x, y and z axis and return home<br>
+`-s/--stationary/--disableMovement`: Disables robot movement (also enables ghost mode)<br>
+`-I/--disableInvCheck`: Disables the inventory check<br>
+`-p/--disablePrompts`: Disables all prompts, defaulting reactor ID to 1. Useful for running programs into output files. If in an error state, will always exit the program<br>
+`--glass`: Use glass for front, back and top faces of turbine. Equivalent to using `--glass-front --glass-back --glass-top`<br>
+`--glass-{front|back|top|bottom}`: Use glass instead of casing for specified turbine face.
+
 ## Color Status Codes
 
 - Red: Error State, check the robot
 - Yellow: Returning to inventory to pick up items
 - Green: Building normally
 - Clear/No Color: Program finished/terminated
+
+## Addons
+
+More details to come soon!

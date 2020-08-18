@@ -1,6 +1,6 @@
 --[[[
 NCO Turbine Builder by Sanrom
-v0.1.7
+v0.1.8
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -301,9 +301,10 @@ local function stockUp(offset, turbine)
     if slot then
       for e = 1, common.util.protectedMethod(inv_controller.getInventorySize, sides.bottom) do
         local v = inv_controller.getStackInSlot(sides.bottom, e)
-        if not v or v.name == slot.name and v.damage == slot.damage then
-          common.util.protectedMethod(inv_controller.dropIntoSlot, sides.bottom, e, math.min(slot.size, (v.maxSize - v.size)))
-          break
+        if not v or (v.name == slot.name and v.damage == slot.damage and v.size < v.maxSize) then
+          local dropAmount = not v and slot.size or math.min(slot.size, (v.maxSize - v.size))
+          common.util.protectedMethod(inv_controller.dropIntoSlot, sides.bottom, e, dropAmount)
+          if dropAmount == slot.size then break end
         end
       end
     end
@@ -362,14 +363,14 @@ local function stockUp(offset, turbine)
     local slot = blockStacks[i]
     robot.select(i)
     if slot then
-      local availableSpace = slot.maxSize - slot.size
-      if availableSpace > 0 then
-        if flags.debug then print("[INFO] Looking for " .. availableSpace .. " " .. common.util.getBlockName(slot, turbine.map_inverse)) end
+      local toLoad = math.min(slot.maxSize - slot.size, slot.toLoad)
+      if toLoad > 0 then
+        if flags.debug then print("[INFO] Looking for " .. toLoad .. " " .. common.util.getBlockName(slot, turbine.map_inverse)) end
         for e = 1, common.util.protectedMethod(inv_controller.getInventorySize, sides.bottom) do
-          if availableSpace <= 0 then break end
+          if toLoad <= 0 then break end
           local v = inv_controller.getStackInSlot(sides.bottom, e)
           if v and slot.name == v.name and slot.damage == v.damage then
-            availableSpace = availableSpace - common.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, e, availableSpace)
+            toLoad = toLoad - common.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, e, toLoad)
           end
         end
       end
