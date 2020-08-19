@@ -1,0 +1,52 @@
+--General
+[Fuel Vessel] = nuclearcraft:salt_fission_vessel:0
+[Neutron Irradiator] = nuclearcraft:fission_irradiator:0
+[Conductor] = nuclearcraft:fission_conductor:0
+
+--Reflectors
+[Beryllium-Carbon Reflector] = nuclearcraft:fission_reflector:0
+[Lead-Steel Reflector] = nuclearcraft:fission_reflector:1
+
+--Shields
+[Boron-Silver Neutron Shield] = nuclearcraft:fission_shield:0
+
+--Moderators
+[Graphite Moderator] = nuclearcraft:ingot_block:8
+[Beryllium Moderator] = nuclearcraft:ingot_block:9
+[Heavy Water Moderator] = nuclearcraft:heavy_water_moderator:0
+
+--Coolant Heater 1
+[Standard Coolant Heater] = nuclearcraft:salt_fission_heater:0
+[Iron Coolant Heater] = nuclearcraft:salt_fission_heater:1
+[Redstone Coolant Heater] = nuclearcraft:salt_fission_heater:2
+[Quartz Coolant Heater] = nuclearcraft:salt_fission_heater:3
+[Obsidian Coolant Heater] = nuclearcraft:salt_fission_heater:4
+[Nether Brick Coolant Heater] = nuclearcraft:salt_fission_heater:5
+[Glowstone Coolant Heater] = nuclearcraft:salt_fission_heater:6
+[Lapis Coolant Heater] = nuclearcraft:salt_fission_heater:7
+[Gold Coolant Heater] = nuclearcraft:salt_fission_heater:8
+[Prismarine Coolant Heater] = nuclearcraft:salt_fission_heater:9
+[Slime Coolant Heater] = nuclearcraft:salt_fission_heater:10
+[End Stone Coolant Heater] = nuclearcraft:salt_fission_heater:11
+[Purpur Coolant Heater] = nuclearcraft:salt_fission_heater:12
+[Diamond Coolant Heater] = nuclearcraft:salt_fission_heater:13
+[Emerald Coolant Heater] = nuclearcraft:salt_fission_heater:14
+[Copper Coolant Heater] = nuclearcraft:salt_fission_heater:15
+
+--Coolant Heater 2
+[Tin Coolant Heater] = nuclearcraft:salt_fission_heater2:0
+[Lead Coolant Heater] = nuclearcraft:salt_fission_heater2:1
+[Boron Coolant Heater] = nuclearcraft:salt_fission_heater2:2
+[Lithium Coolant Heater] = nuclearcraft:salt_fission_heater2:3
+[Magnesium Coolant Heater] = nuclearcraft:salt_fission_heater2:4
+[Manganese Coolant Heater] = nuclearcraft:salt_fission_heater2:5
+[Aluminum Coolant Heater] = nuclearcraft:salt_fission_heater2:6
+[Silver Coolant Heater] = nuclearcraft:salt_fission_heater2:7
+[Fluorite Coolant Heater] = nuclearcraft:salt_fission_heater2:8
+[Villiaumite Coolant Heater] = nuclearcraft:salt_fission_heater2:9
+[Carobbiite Coolant Heater] = nuclearcraft:salt_fission_heater2:10
+[Arsenic Coolant Heater] = nuclearcraft:salt_fission_heater2:11
+[Liquid Nitrogen Coolant Heater] = nuclearcraft:salt_fission_heater2:12
+[Liquid Helium Coolant Heater] = nuclearcraft:salt_fission_heater2:13
+[Enderium Coolant Heater] = nuclearcraft:salt_fission_heater2:14
+[Cryotheum Coolant Heater] = nuclearcraft:salt_fission_heater2:15

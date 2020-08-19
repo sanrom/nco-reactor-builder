@@ -1,0 +1,52 @@
+--General
+[Fuel Cell] = nuclearcraft:solid_fission_cell:0
+[Neutron Irradiator] = nuclearcraft:fission_irradiator:0
+[Conductor] = nuclearcraft:fission_conductor:0
+
+--Reflectors
+[Beryllium-Carbon Reflector] = nuclearcraft:fission_reflector:0
+[Lead-Steel Reflector] = nuclearcraft:fission_reflector:1
+
+--Shields
+[Boron-Silver Neutron Shield] = nuclearcraft:fission_shield:0
+
+--Moderators
+[Graphite Moderator] = nuclearcraft:ingot_block:8
+[Beryllium Moderator] = nuclearcraft:ingot_block:9
+[Heavy Water Moderator] = nuclearcraft:heavy_water_moderator:0
+
+--Heat Sink 1
+[Water Heat Sink] = nuclearcraft:solid_fission_sink:0
+[Iron Heat Sink] = nuclearcraft:solid_fission_sink:1
+[Redstone Heat Sink] = nuclearcraft:solid_fission_sink:2
+[Quartz Heat Sink] = nuclearcraft:solid_fission_sink:3
+[Obsidian Heat Sink] = nuclearcraft:solid_fission_sink:4
+[Nether Brick Heat Sink] = nuclearcraft:solid_fission_sink:5
+[Glowstone Heat Sink] = nuclearcraft:solid_fission_sink:6
+[Lapis Heat Sink] = nuclearcraft:solid_fission_sink:7
+[Gold Heat Sink] = nuclearcraft:solid_fission_sink:8
+[Prismarine Heat Sink] = nuclearcraft:solid_fission_sink:9
+[Slime Heat Sink] = nuclearcraft:solid_fission_sink:10
+[End Stone Heat Sink] = nuclearcraft:solid_fission_sink:11
+[Purpur Heat Sink] = nuclearcraft:solid_fission_sink:12
+[Diamond Heat Sink] = nuclearcraft:solid_fission_sink:13
+[Emerald Heat Sink] = nuclearcraft:solid_fission_sink:14
+[Copper Heat Sink] = nuclearcraft:solid_fission_sink:15
+
+--Heat Sink 2
+[Tin Heat Sink] = nuclearcraft:solid_fission_sink2:0
+[Lead Heat Sink] = nuclearcraft:solid_fission_sink2:1
+[Boron Heat Sink] = nuclearcraft:solid_fission_sink2:2
+[Lithium Heat Sink] = nuclearcraft:solid_fission_sink2:3
+[Magnesium Heat Sink] = nuclearcraft:solid_fission_sink2:4
+[Manganese Heat Sink] = nuclearcraft:solid_fission_sink2:5
+[Aluminum Heat Sink] = nuclearcraft:solid_fission_sink2:6
+[Silver Heat Sink] = nuclearcraft:solid_fission_sink2:7
+[Fluorite Heat Sink] = nuclearcraft:solid_fission_sink2:8
+[Villiaumite Heat Sink] = nuclearcraft:solid_fission_sink2:9
+[Carobbiite Heat Sink] = nuclearcraft:solid_fission_sink2:10
+[Arsenic Heat Sink] = nuclearcraft:solid_fission_sink2:11
+[Liquid Nitrogen Heat Sink] = nuclearcraft:solid_fission_sink2:12
+[Liquid Helium Heat Sink] = nuclearcraft:solid_fission_sink2:13
+[Enderium Heat Sink] = nuclearcraft:solid_fission_sink2:14
+[Cryotheum Heat Sink] = nuclearcraft:solid_fission_sink2:15

@@ -1,6 +1,5 @@
 --[[
 NCO Reactor Builder Download Script by Sanrom
-v0.1.1
 
 Syntax: 
 rb_installer [<branch>]
@@ -14,6 +13,7 @@ rb_installer -d [-f] {--google-drive|--dropbox} <id>
 ]]
 local component = require("component")
 local shell = require("shell")
+local filesystem = require("filesystem")
 
 if not component.isAvailable("internet") then error("Internet Card not installed") end
 
@@ -35,7 +35,24 @@ if ops.d then
     downloadFile("https://dl.dropboxusercontent.com/s/" .. (args[1] or "") .. " " .. (args[2] or "reactor.ncpf"), force)
   end
 else
+  --Create directories if they dont exist
+  if not filesystem.isDirectory(filesystem.concat(shell.getWorkingDirectory(),"rblib")) then 
+    filesystem.makeDirectory(filesystem.concat(shell.getWorkingDirectory(),"rblib"))
+  end
+  if not filesystem.isDirectory(filesystem.concat(shell.getWorkingDirectory(),"rblib/blockmaps")) then 
+    filesystem.makeDirectory(filesystem.concat(shell.getWorkingDirectory(),"rblib/blockmaps"))
+  end
+
   --Always force download scripts to allow updating
-  downloadFile(repo .. branch .. "/config2_parser.lua", true)
-  downloadFile(repo .. branch .. "/reactor_builder.lua", true)
+  downloadFile(repo .. branch .. "/rblib/config2_parser.lua rblib/config2_parser.lua", true)
+  downloadFile(repo .. branch .. "/rblib/rb_common.lua rblib/rb_common.lua", true)
+  downloadFile(repo .. branch .. "/reactor_builder.lua reactor_builder.lua", true)
+  downloadFile(repo .. branch .. "/turbine_builder.lua turbine_builder.lua", true)
+
+  --Don't download blockmaps if people added customisations
+  downloadFile(repo .. branch .. "/rblib/blockmaps/overhaulSFR.map rblib/blockmaps/overhaulSFR.map", false)
+  downloadFile(repo .. branch .. "/rblib/blockmaps/overhaulMSR.map rblib/blockmaps/overhaulMSR.map", false)
+  downloadFile(repo .. branch .. "/rblib/blockmaps/overhaulTurbineBlocks.map rblib/blockmaps/overhaulTurbineBlocks.map", false)
+  downloadFile(repo .. branch .. "/rblib/blockmaps/overhaulTurbineBlades.map rblib/blockmaps/overhaulTurbineBlades.map", false)
+
 end

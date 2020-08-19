@@ -301,6 +301,7 @@ function parser.ncpf(filename)
   for i = 1, configs.header["count"] do
     configs[i] = parser.parse(file)
   end
+  file:close()
   return configs
 end
 
