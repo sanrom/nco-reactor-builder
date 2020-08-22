@@ -63,6 +63,6 @@ else
   --Download default blockmaps
   downloadBlockMap(repo .. branch, "overhaulSFR.map", force)
   downloadBlockMap(repo .. branch, "overhaulMSR.map", force)
-  downloadBlockMap(repo .. branch, "overhaulTurbineBlocks.map", force)
+  downloadBlockMap(repo .. branch, "overhaulTurbine.map", force)
 
 end
