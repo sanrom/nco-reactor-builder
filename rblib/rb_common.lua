@@ -7,6 +7,7 @@ local filesystem = require("filesystem")
 local component = require("component")
 local sides = require("sides")
 local shell = require("shell")
+local computer = require("computer")
 
 if not component.isAvailable("inventory_controller") then error("This program requires an inventory controller to run") end
 local inv_controller = component.inventory_controller
@@ -96,6 +97,12 @@ end
 function module.util.setFlags(flags)
   module.flags = nil
   module.flags = flags
+end
+
+function module.util.time(f, ...)
+  local startTime = computer.uptime()
+  f(arg)
+  if module.flags.debug then print(string.format("[INFO] Time elapsed: %.2f", computer.uptime() - startTime)) end
 end
 
 --MOVEMENT
@@ -257,25 +264,48 @@ function module.inventory.stockUp(offset, multiblock)
   if module.flags.debug then print("[INFO] Loading Inventory") end
 
   --Fill up all slots to max from external inv
-  local lastPos = 0
-  for i = 1, invSize do
-    local slot = blockStacks[i]
-    robot.select(i)
-    if slot then
-      local toLoad = math.min(slot.maxSize - slot.size, slot.toLoad)
-      if toLoad > 0 then
-        if module.flags.debug then print("[INFO] Looking for " .. toLoad .. " " .. module.util.getBlockName(slot, multiblock.map_inverse)) end
-        local externalInvSize = module.util.protectedMethod(inv_controller.getInventorySize, sides.bottom)
-        for e = 1, externalInvSize do
-          local searchPos = (e + lastPos) % externalInvSize
-          local searchSlot = inv_controller.getStackInSlot(sides.bottom, searchPos)
+  local externalInvSize = module.util.protectedMethod(inv_controller.getInventorySize, sides.bottom)
+
+  -- if invSize > externalInvSize then
+
+  --   --Loop over external for each internal
+  --   local lastPos = 0
+  --   for i = 1, invSize do
+  --     local slot = blockStacks[i]
+  --     robot.select(i)
+  --     if slot then
+  --       local toLoad = math.min(slot.maxSize - slot.size, slot.toLoad)
+  --       if toLoad > 0 then
+  --         if module.flags.debug then print("[INFO] Looking for " .. toLoad .. " " .. module.util.getBlockName(slot, multiblock.map_inverse)) end
+  --         for e = 1, externalInvSize do
+  --           local searchPos = ((e - 1 + lastPos) % externalInvSize) + 1
+  --           local searchSlot = inv_controller.getStackInSlot(sides.bottom, searchPos)
+  --           if searchSlot and slot.name == searchSlot.name and slot.damage == searchSlot.damage then
+  --             toLoad = toLoad - module.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, searchPos, toLoad)
+  --           end
+  --           if toLoad <= 0 then
+  --             lastPos = searchPos - 1
+  --             break
+  --           end
+  --         end
+  --       end
+  --     end
+  --   end
+  -- end
+
+  --Loop over internal for each external
+  for e = 1, externalInvSize do
+    local searchSlot = inv_controller.getStackInSlot(sides.bottom, e)
+    if module.flags.debug and searchSlot then print("[INFO] Looking at " .. searchSlot.size .. " " .. module.util.getBlockName(searchSlot, multiblock.map_inverse)) end
+    for i = 1, invSize do
+      local slot = blockStacks[i]
+      if slot then
+        local toLoad = math.min(slot.maxSize - slot.size, slot.toLoad)
+        if toLoad > 0 then
           if searchSlot and slot.name == searchSlot.name and slot.damage == searchSlot.damage then
-            toLoad = toLoad - module.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, searchPos, toLoad)
+            toLoad = toLoad - module.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, e, toLoad)
           end
-          if toLoad <= 0 then
-            lastPos = searchPos - 1
-            break
-          end
+          if toLoad <= 0 then break end
         end
       end
     end

@@ -356,5 +356,5 @@ end
 if flags.outline then
   common.movement.traceOutline(turbine)
 else
-  build(turbine)
+  common.util.time(build, turbine)
 end
