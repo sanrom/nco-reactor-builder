@@ -1,6 +1,6 @@
 --[[
 NCO Reactor Builder by Sanrom
-v0.3.2
+v0.3.1
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -189,174 +189,13 @@ end
 
 --BUILD
 
-local function stockUp(offset, reactor)
-
-  if flags.debug then print("[INFO] Stocking Up") end
-
-  local invSize = robot.inventorySize()
-  local blockStacks = {}
-
-  if flags.debug then print("[INFO] Emptying Slots") end
-
-  --Unload inventory if possible
-  for i = 1, invSize do
-    robot.select(i)
-    local slot = inv_controller.getStackInInternalSlot(i)
-    if slot then
-      for e = 1, common.util.protectedMethod(inv_controller.getInventorySize, sides.bottom) do
-        local v = inv_controller.getStackInSlot(sides.bottom, e)
-        if not v or (v.name == slot.name and v.damage == slot.damage and v.size < v.maxSize) then
-          local dropAmount = not v and slot.size or math.min(slot.size, (v.maxSize - v.size))
-          common.util.protectedMethod(inv_controller.dropIntoSlot, sides.bottom, e, dropAmount)
-          if dropAmount == slot.size then break end
-        end
-      end
-    end
-  end
-
-  if flags.debug then print("[INFO] Indexing Internal Slots") end
-
-  --Count/Load still occupied slots
-  local availableSlots = invSize
-  for i = 1, invSize do
-    robot.select(i)
-    local slot = inv_controller.getStackInInternalSlot(i)
-    if slot then
-      blockStacks[i] = slot
-      blockStacks[i].toLoad = 0
-      availableSlots = availableSlots - 1
-    end
-  end
-
-  if flags.debug then print("[INFO] Available slots: " .. availableSlots) end
-  if flags.debug then print("[INFO] Generating future block map") end
-
-  --Find which blocks will be used next and fill up remaining slots with those
-  local full = false
-  for y = offset.y, reactor.size.y do
-    for z = offset.z, reactor.size.z do
-      for x = offset.x, reactor.size.x do
-        local block = reactor.map[reactor.blocks[x][y][z]]
-        local loaded = false
-        if block then
-          for i = 1, invSize do
-            if blockStacks[i] then
-              if blockStacks[i].name == block.name and blockStacks[i].damage == block.damage and (blockStacks[i].size + blockStacks[i].toLoad) <= blockStacks[i].maxSize then
-                blockStacks[i].toLoad = blockStacks[i].toLoad + 1
-                loaded = true
-              end
-            else
-              blockStacks[i] = {name = block.name, damage = block.damage, size = 0, maxSize = 64, toLoad = 1}
-              loaded = true
-            end
-            if loaded then break end
-          end
-          full = not loaded
-        end
-        if full then break end
-      end
-      if full then break end
-    end
-    if full then break end
-  end
-
-  if flags.debug then print("[INFO] Loading Inventory") end
-
-  --Fill up all slots to max from external inv
-  for i = 1, invSize do
-    local slot = blockStacks[i]
-    robot.select(i)
-    if slot then
-      local toLoad = math.min(slot.maxSize - slot.size, slot.toLoad)
-      if toLoad > 0 then
-        if flags.debug then print("[INFO] Looking for " .. toLoad .. " " .. common.util.getBlockName(slot, reactor.map_inverse)) end
-        for e = 1, common.util.protectedMethod(inv_controller.getInventorySize, sides.bottom) do
-          if toLoad <= 0 then break end
-          local v = inv_controller.getStackInSlot(sides.bottom, e)
-          if v and slot.name == v.name and slot.damage == v.damage then
-            toLoad = toLoad - common.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, e, toLoad)
-          end
-        end
-      end
-    end
-  end
-
-  if flags.debug then print("[INFO] Done Loading Inventory") end
-
-  robot.select(1) --go back to first slot
-end
-
-local function getBlock(block, offset, reactor)
-
-  local currentSlot = inv_controller.getStackInInternalSlot()
-
-  if not block then return end --Air/nil
-
-  --Check if block is in current slot
-  if currentSlot and currentSlot.name == block.name and currentSlot.damage == block.damage then
-    if flags.debug then print("[INFO] Found block in slot") end
-    common.util.protectedPlaceBlock()
-    return
-  end
-
-  if flags.debug then print("[INFO] Block not in current slot, looking in local inventory") end
-
-  --Check if block is in robot inventory
-  for i = 1, robot.inventorySize() do
-    currentSlot = inv_controller.getStackInInternalSlot(i)
-    if currentSlot and currentSlot.name == block.name and currentSlot.damage == block.damage then
-      robot.select(i)
-      common.util.protectedPlaceBlock()
-      return
-    end
-  end
-
-  if flags.debug then print("[INFO] Block not found in local inventory, going back to stock up") end
-
-  --Repeat block fetch until block is placed or user exits
-  while true do
-    --Go back to base chest
-    robot.setLightColor(0xffff00)
-    common.movement.protectedMove(robot.back, offset.x - 1)
-    common.movement.protectedTurn(robot.turnRight)
-    common.movement.protectedMove(robot.back, offset.z - 1)
-    common.movement.protectedTurn(robot.turnLeft)
-    common.movement.protectedMove(robot.back, 1)
-    common.movement.protectedMove(robot.down, offset.y - 1)
-
-    --Stock up
-    stockUp(offset, reactor)
-
-    --Do the same moves, in reverse!
-    common.movement.protectedMove(robot.up, offset.y - 1)
-    common.movement.protectedMove(robot.forward, 1)
-    common.movement.protectedTurn(robot.turnRight)
-    common.movement.protectedMove(robot.forward, offset.z - 1)
-    common.movement.protectedTurn(robot.turnLeft)
-    common.movement.protectedMove(robot.forward, offset.x - 1)
-    robot.setLightColor(0x00ff00)
-
-    --Again, check if block is in local inv
-    for i = 1, robot.inventorySize() do
-      currentSlot = inv_controller.getStackInInternalSlot(i)
-      if currentSlot and currentSlot.name == block.name and currentSlot.damage == block.damage then
-        robot.select(i)
-        common.util.protectedPlaceBlock()
-        return
-      end
-    end
-
-    common.util.errorState("Could not find " .. common.util.getBlockName(block, reactor.map_inverse))
-  end
-end
-
 local function build(reactor)
 
   --set robot color to active
   robot.setLightColor(0x00ff00)
 
   --stock up
-  stockUp(reactor.startOffset, reactor)
+  common.inventory.stockUp(reactor.startOffset, reactor)
 
   --move to start offset
   common.movement.protectedMove(robot.up, reactor.startOffset.y - 1)
@@ -372,7 +211,7 @@ local function build(reactor)
       for x = reactor.startOffset.x, reactor.size.x do
         local block = reactor.blocks[x][y][z]
         if flags.debug then print(string.format("[BLOCK] x: %d, y: %d, z: %d =>", x, y, z) .. common.util.getBlockName(reactor.map[block], reactor.map_inverse)) end
-        getBlock(reactor.map[block], {x = x, y = y, z = z}, reactor)
+        common.inventory.getBlock(reactor.map[block], {x = x, y = y, z = z}, reactor)
         if x < reactor.size.x then common.movement.nextBlock() end
       end
       if z < reactor.size.z then common.movement.nextLine(reactor.size.x - 1) end
