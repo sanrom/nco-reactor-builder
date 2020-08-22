@@ -175,7 +175,7 @@ local function loadTurbine(filename, startOffset)
     return nil, "Internal diameter and bearing diameter are not compatible"
   end
 
-  if flags.debug then print(string.format("[INFO] Turbine Shaft Dimensions: c = %2d, >= %2d, <= %2d", turbine.shaft.center, turbine.shaft.min, turbine.shaft.max)) end
+  if flags.debug then print(string.format("[INFO] Turbine Shaft Dimensions: c = %2f, >= %2d, <= %2d", turbine.shaft.center, turbine.shaft.min, turbine.shaft.max)) end
 
   --Generate Block map
   local coilPos = 1

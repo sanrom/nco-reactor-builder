@@ -1,4 +1,4 @@
---NCOUTO Block map for v0.5
+--NCOUTO Block map for v0.6
 --Coils
 [Redstone Coil] = nuclearcraft:turbine_dynamo_coil_redstone:0
 [Graphite Coil] = nuclearcraft:turbine_dynamo_coil_graphite:0
