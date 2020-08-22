@@ -266,33 +266,6 @@ function module.inventory.stockUp(offset, multiblock)
   --Fill up all slots to max from external inv
   local externalInvSize = module.util.protectedMethod(inv_controller.getInventorySize, sides.bottom)
 
-  -- if invSize > externalInvSize then
-
-  --   --Loop over external for each internal
-  --   local lastPos = 0
-  --   for i = 1, invSize do
-  --     local slot = blockStacks[i]
-  --     robot.select(i)
-  --     if slot then
-  --       local toLoad = math.min(slot.maxSize - slot.size, slot.toLoad)
-  --       if toLoad > 0 then
-  --         if module.flags.debug then print("[INFO] Looking for " .. toLoad .. " " .. module.util.getBlockName(slot, multiblock.map_inverse)) end
-  --         for e = 1, externalInvSize do
-  --           local searchPos = ((e - 1 + lastPos) % externalInvSize) + 1
-  --           local searchSlot = inv_controller.getStackInSlot(sides.bottom, searchPos)
-  --           if searchSlot and slot.name == searchSlot.name and slot.damage == searchSlot.damage then
-  --             toLoad = toLoad - module.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, searchPos, toLoad)
-  --           end
-  --           if toLoad <= 0 then
-  --             lastPos = searchPos - 1
-  --             break
-  --           end
-  --         end
-  --       end
-  --     end
-  --   end
-  -- end
-
   --Loop over internal for each external
   for e = 1, externalInvSize do
     local searchSlot = inv_controller.getStackInSlot(sides.bottom, e)
@@ -330,6 +303,16 @@ function module.inventory.getBlock(block, offset, multiblock)
     if module.flags.debug then print("[INFO] Found block in slot") end
     module.util.protectedPlaceBlock()
     return
+  end
+
+  --If first slot is empty, shuffle blocks over by one
+  while not currentSlot do
+    for i = 1, robot.inventorySize() - 1 do
+      robot.select(i)
+      robot.transferTo(i + 1)
+    end
+    robot.select(1)
+    currentSlot = inv_controller.getStackInInternalSlot(1)
   end
 
   if module.flags.debug then print("[INFO] Block not in current slot, looking in local inventory") end

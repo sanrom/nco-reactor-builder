@@ -1,11 +1,11 @@
---[[[
+--[[
 NCO Turbine Builder by Sanrom
 v0.3.2
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
 NCPF Format: https://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-cuv1sUJBB5aGY/edit#
-]]
+--]]
 
 local component = require("component")
 local sides = require("sides")
