@@ -234,7 +234,7 @@ function module.inventory.stockUp(offset, multiblock)
           if block then
             for i = 1, invSize do
               if blockStacks[i] then
-                if blockStacks[i].name == block.name and blockStacks[i].damage == block.damage and (blockStacks[i].size + blockStacks[i].toLoad) <= blockStacks[i].maxSize then
+                if blockStacks[i].name == block.name and blockStacks[i].damage == block.damage and (blockStacks[i].size + blockStacks[i].toLoad) < blockStacks[i].maxSize then
                   blockStacks[i].toLoad = blockStacks[i].toLoad + 1
                   loaded = true
                 end
@@ -300,10 +300,13 @@ function module.inventory.stockUp(offset, multiblock)
     if searchSlot then
       for i = 1, invSize do
         local slot = blockStacks[i]
-        if slot and slot.name == searchSlot.name and slot.damage == searchSlot.damage then
+        if slot and searchSlot and slot.name == searchSlot.name and slot.damage == searchSlot.damage and searchSlot.size > 0 then
           local toLoad = math.min(slot.maxSize - slot.size, slot.toLoad)
+          if module.flags.debug then print("[INFO] Looking for " .. toLoad .. " " .. module.util.getBlockName(slot, multiblock.map_inverse)) end
           if toLoad > 0 then
+            robot.select(i)
             slot.toLoad = slot.toLoad - module.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, e, toLoad)
+            searchSlot = inv_controller.getStackInSlot(sides.bottom, e)
             if slot.toLoad <= 0 then break end
           end
         end

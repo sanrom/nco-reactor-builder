@@ -259,5 +259,5 @@ end
 if flags.outline then
   common.movement.traceOutline(reactor)
 else
-  build(reactor)
+  common.util.time(build, reactor)
 end
