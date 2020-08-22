@@ -1,0 +1,26 @@
+--Casing
+[Turbine Casing] = nuclearcraft:turbine_casing:0
+[Turbine Glass] = nuclearcraft:turbine_glass:0
+
+--Bearing & Shaft
+[Rotor bearing] = nuclearcraft:turbine_rotor_bearing:0
+[Rotor Bearing] = nuclearcraft:turbine_rotor_bearing:0
+[Rotor Shaft] = nuclearcraft:turbine_rotor_shaft:0
+
+--Coils
+[Dynamo Coil Connector] = nuclearcraft:turbine_coil_connector:0
+
+[Magnesium Dynamo Coil] = nuclearcraft:turbine_dynamo_coil:0
+[Beryllium Dynamo Coil] = nuclearcraft:turbine_dynamo_coil:1
+[Aluminum Dynamo Coil] = nuclearcraft:turbine_dynamo_coil:2
+[Gold Dynamo Coil] = nuclearcraft:turbine_dynamo_coil:3
+[Copper Dynamo Coil] = nuclearcraft:turbine_dynamo_coil:4
+[Silver Dynamo Coil] = nuclearcraft:turbine_dynamo_coil:5
+
+--Rotors
+[Steel Rotor Blade] = nuclearcraft:turbine_rotor_blade_steel:0
+[Extreme Alloy Rotor Blade] = nuclearcraft:turbine_rotor_blade_extreme:0
+[SiC-SiC CMC Rotor Blade] = nuclearcraft:turbine_rotor_blade_sic_sic_cmc:0
+
+--Stators
+[Rotor Stator] = nuclearcraft:turbine_rotor_stator:0

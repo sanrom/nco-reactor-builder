@@ -19,6 +19,7 @@ in OpenComputers to install the scripts!
 - [ ] Automatic cell filtering
 - [x] Direct download from Google Drive, Dropbox
 - [x] Support for addons
+- [ ] QMD Added blocks
 
 ## Requirements
 
@@ -71,20 +72,30 @@ This is what the finished reactor should look like:
 
 ### Installer/Updater
 
-`rb_installer [<branch>]`
+`rb_installer [-f] [<branch>]`
 
-`[<branch>]`: branch of files to install, defaults to `master`
+`[<branch>]`: branch of files to install, defaults to `master`<br>
+`-f`: Force download, overwrites existing files<br>
+Note: this will always force download lua files to update the scripts to the latest version
+
+#### Downloading extra files for addons
+
+`rb_installer -a [-f] <addon>`
+
+`<addon>`: name of the addon file to download<br>
+Supported addons:
+- [x] [NCOUTO v0.5](https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine)
+- [] [MoarHeatSinks](https://www.curseforge.com/minecraft/customization/moar-heat-sinks)
 
 #### Cloud Download Utility
 
 `rb_installer -d [-f] {--google-drive|--dropbox} <id> [<filename>]`
 
-`<id>`: see below for requirements for each cloud service
+`<id>`: see below for requirements for each cloud service<br>
 `[<filename>]`: filename to save to, defaults to `reactor.ncpf`
 
-`--googleDrive`: file must be public, id is fileid
+`--googleDrive`: file must be public, id is fileid<br>
 `--dropbox`: file must be public, id is everything after /s/
-`-f`: Force download, overwrites existing files
 
 ### Reactor Builder
 

@@ -1,6 +1,6 @@
 --[[[
 NCO Turbine Builder by Sanrom
-v0.1.8
+v0.3.2
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -10,8 +10,6 @@ NCPF Format: https://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-c
 local component = require("component")
 local sides = require("sides")
 local shell = require("shell")
--- local os = require("os")
-local event = require("event")
 
 local parser = require("rblib.config2_parser")
 local common = require("rblib.rb_common")
@@ -24,7 +22,7 @@ local inv_controller = component.inventory_controller
 
 local flags = {}
 
-local blockmap_paths = {blocks = "rblib/blockmaps/overhaulTurbineBlocks.map", blades = "rblib/blockmaps/overhaulTurbineBlades.map"}
+local blockmap_path = "overhaulTurbine"
 
 --UTIL
 
@@ -67,6 +65,8 @@ local function loadArgs(...)
   if ops["glass-bottom"] then flags.glass.bottom = true end
   if ops["glass-front"] then flags.glass.front = true end
   if ops["glass-back"] then flags.glass.back = true end
+
+  common.util.setFlags(flags)
 
   return args
 end
@@ -113,13 +113,13 @@ local function loadTurbine(filename, startOffset)
   end
 
   --Generate ID map for coils
-  local blockMap = common.util.blockMapLoad(blockmap_paths.blocks)
+  local blockMap = common.util.blockMapLoad(blockmap_path)
 
-  turbine.map[1] = blockMap["Turbine Casing"]
+  turbine.map[1] = blockMap["Turbine Casing"] or error("Missing map entry: Turbine Casing")
   turbine.map[1].count = 0
-  turbine.map[2] = blockMap["Turbine Glass"]
+  turbine.map[2] = blockMap["Turbine Glass"] or error("Missing map entry: Turbine Glass")
   turbine.map[2].count = 0
-  turbine.map[3] = blockMap["Rotor Shaft"]
+  turbine.map[3] = blockMap["Rotor Shaft"] or error("Missing map entry: Rotor Shaft")
   turbine.map[3].count = 0
 
   local coilOffset = #turbine.map
@@ -134,12 +134,12 @@ local function loadTurbine(filename, startOffset)
 
   --blades
   local bladeOffset = #turbine.map
-  local bladeMap = common.util.blockMapLoad(blockmap_paths.blades)
+  -- local bladeMap = common.util.blockMapLoad(blockmap_paths.blades)
   for i, v in ipairs(configs.configuration.overhaul.turbine.blades) do
-    if not bladeMap[v.name] then
+    if not blockMap[v.name] then
       error("Missing map entry: " .. v.name)
     else
-      turbine.map[bladeOffset + i] = bladeMap[v.name]
+      turbine.map[bladeOffset + i] = blockMap[v.name]
       turbine.map[bladeOffset + i].count = 0 --Init count of blades to 0
     end
   end
@@ -175,7 +175,7 @@ local function loadTurbine(filename, startOffset)
     return nil, "Internal diameter and bearing diameter are not compatible"
   end
 
-  if flags.debug then print(string.format("[INFO] Turbine Shaft Dimensions: c = %2d, >= %2d, <= %2d", turbine.shaft.center, turbine.shaft.min, turbine.shaft.max)) end
+  if flags.debug then print(string.format("[INFO] Turbine Shaft Dimensions: c = %2f, >= %2d, <= %2d", turbine.shaft.center, turbine.shaft.min, turbine.shaft.max)) end
 
   --Generate Block map
   local coilPos = 1
@@ -285,174 +285,13 @@ local function loadTurbine(filename, startOffset)
   return turbine
 end
 
-local function stockUp(offset, turbine)
-
-  if flags.debug then print("[INFO] Stocking Up") end
-
-  local invSize = robot.inventorySize()
-  local blockStacks = {}
-
-  if flags.debug then print("[INFO] Emptying Slots") end
-
-  --Unload inventory if possible
-  for i = 1, invSize do
-    robot.select(i)
-    local slot = inv_controller.getStackInInternalSlot(i)
-    if slot then
-      for e = 1, common.util.protectedMethod(inv_controller.getInventorySize, sides.bottom) do
-        local v = inv_controller.getStackInSlot(sides.bottom, e)
-        if not v or (v.name == slot.name and v.damage == slot.damage and v.size < v.maxSize) then
-          local dropAmount = not v and slot.size or math.min(slot.size, (v.maxSize - v.size))
-          common.util.protectedMethod(inv_controller.dropIntoSlot, sides.bottom, e, dropAmount)
-          if dropAmount == slot.size then break end
-        end
-      end
-    end
-  end
-
-  if flags.debug then print("[INFO] Indexing Internal Slots") end
-
-  --Count/Load still occupied slots
-  local availableSlots = invSize
-  for i = 1, invSize do
-    robot.select(i)
-    local slot = inv_controller.getStackInInternalSlot(i)
-    if slot then
-      blockStacks[i] = slot
-      blockStacks[i].toLoad = 0
-      availableSlots = availableSlots - 1
-    end
-  end
-
-  if flags.debug then print("[INFO] Available slots: " .. availableSlots) end
-  if flags.debug then print("[INFO] Generating future block map") end
-
-  --Find which blocks will be used next and fill up remaining slots with those
-  local full = false
-  for y = offset.y, turbine.size.y do
-    for z = offset.z, turbine.size.z do
-      for x = offset.x, turbine.size.x do
-        local block = turbine.map[turbine.blocks[x][y][z]]
-        local loaded = false
-        if block then
-          for i = 1, invSize do
-            if blockStacks[i] then
-              if blockStacks[i].name == block.name and blockStacks[i].damage == block.damage and (blockStacks[i].size + blockStacks[i].toLoad) <= blockStacks[i].maxSize then
-                blockStacks[i].toLoad = blockStacks[i].toLoad + 1
-                loaded = true
-              end
-            else
-              blockStacks[i] = {name = block.name, damage = block.damage, size = 0, maxSize = 64, toLoad = 1}
-              loaded = true
-            end
-            if loaded then break end
-          end
-          full = not loaded
-        end
-        if full then break end
-      end
-      if full then break end
-    end
-    if full then break end
-  end
-
-  if flags.debug then print("[INFO] Loading Inventory") end
-
-  --Fill up all slots to max from external inv
-  for i = 1, invSize do
-    local slot = blockStacks[i]
-    robot.select(i)
-    if slot then
-      local toLoad = math.min(slot.maxSize - slot.size, slot.toLoad)
-      if toLoad > 0 then
-        if flags.debug then print("[INFO] Looking for " .. toLoad .. " " .. common.util.getBlockName(slot, turbine.map_inverse)) end
-        for e = 1, common.util.protectedMethod(inv_controller.getInventorySize, sides.bottom) do
-          if toLoad <= 0 then break end
-          local v = inv_controller.getStackInSlot(sides.bottom, e)
-          if v and slot.name == v.name and slot.damage == v.damage then
-            toLoad = toLoad - common.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, e, toLoad)
-          end
-        end
-      end
-    end
-  end
-
-  if flags.debug then print("[INFO] Done Loading Inventory") end
-
-  robot.select(1) --go back to first slot
-end
-
-local function getBlock(block, offset, turbine)
-
-  local currentSlot = inv_controller.getStackInInternalSlot()
-
-  if not block then return end --Air/nil
-
-  --Check if block is in current slot
-  if currentSlot and currentSlot.name == block.name and currentSlot.damage == block.damage then
-    if flags.debug then print("[INFO] Found block in slot") end
-    common.util.protectedPlaceBlock()
-    return
-  end
-
-  if flags.debug then print("[INFO] Block not in current slot, looking in local inventory") end
-
-  --Check if block is in robot inventory
-  for i = 1, robot.inventorySize() do
-    currentSlot = inv_controller.getStackInInternalSlot(i)
-    if currentSlot and currentSlot.name == block.name and currentSlot.damage == block.damage then
-      robot.select(i)
-      common.util.protectedPlaceBlock()
-      return
-    end
-  end
-
-  if flags.debug then print("[INFO] Block not found in local inventory, going back to stock up") end
-
-  --Repeat block fetch until block is placed or user exits
-  while true do
-    --Go back to base chest
-    robot.setLightColor(0xffff00)
-    common.movement.protectedMove(robot.back, offset.x - 1)
-    common.movement.protectedTurn(robot.turnRight)
-    common.movement.protectedMove(robot.back, offset.z - 1)
-    common.movement.protectedTurn(robot.turnLeft)
-    common.movement.protectedMove(robot.back, 1)
-    common.movement.protectedMove(robot.down, offset.y - 1)
-
-    --Stock up
-    stockUp(offset, turbine)
-
-    --Do the same moves, in reverse!
-    common.movement.protectedMove(robot.up, offset.y - 1)
-    common.movement.protectedMove(robot.forward, 1)
-    common.movement.protectedTurn(robot.turnRight)
-    common.movement.protectedMove(robot.forward, offset.z - 1)
-    common.movement.protectedTurn(robot.turnLeft)
-    common.movement.protectedMove(robot.forward, offset.x - 1)
-    robot.setLightColor(0x00ff00)
-
-    --Again, check if block is in local inv
-    for i = 1, robot.inventorySize() do
-      currentSlot = inv_controller.getStackInInternalSlot(i)
-      if currentSlot and currentSlot.name == block.name and currentSlot.damage == block.damage then
-        robot.select(i)
-        common.util.protectedPlaceBlock()
-        return
-      end
-    end
-
-    common.util.errorState("Could not find " .. common.util.getBlockName(block, turbine.map_inverse))
-  end
-end
-
 local function build(turbine)
 
   --set robot color to active
   robot.setLightColor(0x00ff00)
 
   --stock up
-  stockUp(turbine.startOffset, turbine)
+  common.inventory.stockUp(turbine.startOffset, turbine)
 
   --move to start offset
   common.movement.protectedMove(robot.up, turbine.startOffset.y - 1)
@@ -468,7 +307,7 @@ local function build(turbine)
       for x = turbine.startOffset.x, turbine.size.x do
         local block = turbine.blocks[x][y][z]
         if flags.debug then print(string.format("[BLOCK] x: %d, y: %d, z: %d =>", x, y, z) .. common.util.getBlockName(turbine.map[block], turbine.map_inverse)) end
-        getBlock(turbine.map[block], {x = x, y = y, z = z}, turbine)
+        common.inventory.getBlock(turbine.map[block], {x = x, y = y, z = z}, turbine)
         if x < turbine.size.x then common.movement.nextBlock() end
       end
       if z < turbine.size.z then common.movement.nextLine(turbine.size.x - 1) end
@@ -517,5 +356,5 @@ end
 if flags.outline then
   common.movement.traceOutline(turbine)
 else
-  build(turbine)
+  common.util.time(build, turbine)
 end

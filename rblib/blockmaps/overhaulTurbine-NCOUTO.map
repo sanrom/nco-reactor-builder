@@ -1,0 +1,64 @@
+--NCOUTO Block map for v0.6
+--Coils
+[Redstone Coil] = nuclearcraft:turbine_dynamo_coil_redstone:0
+[Graphite Coil] = nuclearcraft:turbine_dynamo_coil_graphite:0
+[Lithium Coil] = nuclearcraft:turbine_dynamo_coil_lithium:0
+[Lapis Coil] = nuclearcraft:turbine_dynamo_coil_lapis:0
+[Emerald Coil] = nuclearcraft:turbine_dynamo_coil_emerald:0
+[Diamond Coil] = nuclearcraft:turbine_dynamo_coil_diamond:0
+[Villiaumite Coil] = nuclearcraft:turbine_dynamo_coil_villiaumite:0
+[Fluorite Coil] = nuclearcraft:turbine_dynamo_coil_fluorite:0
+[Carobbiite Coil] = nuclearcraft:turbine_dynamo_coil_carobbiite:0
+[Hard Carbon Coil] = nuclearcraft:turbine_dynamo_coil_hardcarbon:0
+[Zircaloy Coil] = nuclearcraft:turbine_dynamo_coil_zircaloy:0
+[Thermoconducting Coil] = nuclearcraft:turbine_dynamo_coil_thermoconducting:0
+[Iron Coil] = nuclearcraft:turbine_dynamo_coil_iron:0
+[Boron Coil] = nuclearcraft:turbine_dynamo_coil_boron:0
+[Quartz Coil] = nuclearcraft:turbine_dynamo_coil_quartz:0
+[Arsenic Coil] = nuclearcraft:turbine_dynamo_coil_arsenic:0
+[Glowstone Coil] = nuclearcraft:turbine_dynamo_coil_glowstone:0
+[Nether Brick Coil] = nuclearcraft:turbine_dynamo_coil_nether:0
+[Obsidian Coil] = nuclearcraft:turbine_dynamo_coil_obsidian:0
+[Eutectic NaK Coil] = nuclearcraft:turbine_dynamo_coil_nak:0
+[Corium Coil] = nuclearcraft:turbine_dynamo_coil_corium:0
+[Endstone Coil] = nuclearcraft:turbine_dynamo_coil_end:0
+[Prismarine Coil] = nuclearcraft:turbine_dynamo_coil_prismarine:0
+[Purpur Coil] = nuclearcraft:turbine_dynamo_coil_purpur:0
+[Lead Coil] = nuclearcraft:turbine_dynamo_coil_lead:0
+[Manganese Coil] = nuclearcraft:turbine_dynamo_coil_manganese:0
+[Liquid Nitrogen Coil] = nuclearcraft:turbine_dynamo_coil_nitrogen:0
+[Liquid Helium Coil] = nuclearcraft:turbine_dynamo_coil_helium:0
+[Cryo-stablizied Coil] = nuclearcraft:turbine_dynamo_coil_cryotheum:0
+[Enderium Coil] = nuclearcraft:turbine_dynamo_coil_enderium:0
+[Slimy Coil] = nuclearcraft:turbine_dynamo_coil_slime:0
+[Tin Coil] = nuclearcraft:turbine_dynamo_coil_tin:0
+
+--QMD Coils
+[Chromium Coil] = nuclearcraft:turbine_dynamo_coil_chrom:0
+[Cobalt Coil] = nuclearcraft:turbine_dynamo_coil_cobalt:0
+[Hafnium Coil] = nuclearcraft:turbine_dynamo_coil_hafnium:0
+[Neodymium Coil] = nuclearcraft:turbine_dynamo_coil_neo:0
+[Calcium Coil] = nuclearcraft:turbine_dynamo_coil_calcium:0
+[Nickel Coil] = nuclearcraft:turbine_dynamo_coil_nickel:0
+[Niobium Coil] = nuclearcraft:turbine_dynamo_coil_niobium:0
+[Nickel Coil] = nuclearcraft:turbine_dynamo_coil_nickel:0
+[Potassium Coil] = nuclearcraft:turbine_dynamo_coil_kalium:0
+[Osmium Coil] = nuclearcraft:turbine_dynamo_coil_osmium:0
+[Platinum Coil] = nuclearcraft:turbine_dynamo_coil_plat:0
+[Sodium Coil] = nuclearcraft:turbine_dynamo_coil_natrium:0
+[Strontium Coil] = nuclearcraft:turbine_dynamo_coil_strontium:0
+[S'more Coil] = nuclearcraft:turbine_dynamo_coil_smore:0
+
+--Blades
+[Thorium Stator] = nuclearcraft:turbine_rotor_stator_thorium:0
+[DU Stator] = nuclearcraft:turbine_rotor_stator_uranium:0
+
+[Neptunium Blade] = nuclearcraft:turbine_rotor_blade_neptunium:0
+[Plutonium Blade] = nuclearcraft:turbine_rotor_blade_plutonium:0
+[Americium Blade] = nuclearcraft:turbine_rotor_blade_americium:0
+[Curium Blade] = nuclearcraft:turbine_rotor_blade_curium:0
+[Berkelium Blade] = nuclearcraft:turbine_rotor_blade_berkelium:0
+[Californium Blade] = nuclearcraft:turbine_rotor_blade_californium:0
+[NioSteel Blade] = nuclearcraft:turbine_rotor_blade_niosteel:0
+[ExtremeNio Blade] = nuclearcraft:turbine_rotor_blade_extremenio:0
+[SiCNio Blade] = nuclearcraft:turbine_rotor_blade_sicnio:0

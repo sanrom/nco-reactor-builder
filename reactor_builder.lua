@@ -11,8 +11,6 @@ NCPF Format: https://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-c
 local component = require("component")
 local sides = require("sides")
 local shell = require("shell")
--- local os = require("os")
-local event = require("event")
 
 local parser = require("rblib.config2_parser")
 local common = require("rblib.rb_common")
@@ -26,7 +24,7 @@ local inv_controller = component.inventory_controller
 local flags = {}
 
 local id_map = {[1] = "fissionSFR", [2] = "fissionMSR"}
-local blockmap_paths = {[1] = "rblib/blockmaps/overhaulSFR.map", [2] = "rblib/blockmaps/overhaulMSR.map"}
+local blockmap_paths = {[1] = "overhaulSFR", [2] = "overhaulMSR"}
 
 --UTIL
 
@@ -61,41 +59,9 @@ local function loadArgs(...)
   if ops.l or ops.pauseOnLayer then
     flags.pauseOnLayer = true
   end
+
+  common.util.setFlags(flags)
   
-  return args
-end
-
-local function loadArgs(...)
-  local args, ops = shell.parse(...)
-
-  if ops.d or ops.debug then
-    flags.debug = true
-  end
-
-  if ops.g or ops.ghost then
-    flags.ghost = true
-  end
-
-  if ops.o or ops.outline then
-    flags.outline = true
-  end
-
-  if ops.s or ops.stationary or ops.disableMovement then
-    flags.ghost = true
-    flags.disableMovement = true
-  end
-
-  if ops.I or ops.disableInvCheck then
-    flags.disableInvCheck = true
-  end
-
-  if ops.p or ops.disablePrompts then
-    flags.disablePrompts = true
-  end
-
-  if ops.l or ops.pauseOnLayer then
-    flags.pauseOnLayer = true
-  end
   return args
 end
 
@@ -136,10 +102,12 @@ local function loadReactor(filename, startOffset)
     return nil, "ID not valid!"
 
   --Check format
-  elseif not configs[id].compact then
-    return nil, "Only compact format is supported right now. Other formats will be added soon"
+  elseif configs[id].id == 3 then
+    return nil, "This is a turbine, please use turbine_builder instead"
   elseif configs[id].id < 1 or configs[id].id > 2 then
     return nil, "Only Overhaul SFRs and MSRs are supported right now. Other types of reactors will be added soon"
+  elseif not configs[id].compact then
+    return nil, "Only compact format is supported right now. Other formats will be added soon"
   end
 
   --Generate ID map
@@ -221,174 +189,13 @@ end
 
 --BUILD
 
-local function stockUp(offset, reactor)
-
-  if flags.debug then print("[INFO] Stocking Up") end
-
-  local invSize = robot.inventorySize()
-  local blockStacks = {}
-
-  if flags.debug then print("[INFO] Emptying Slots") end
-
-  --Unload inventory if possible
-  for i = 1, invSize do
-    robot.select(i)
-    local slot = inv_controller.getStackInInternalSlot(i)
-    if slot then
-      for e = 1, common.util.protectedMethod(inv_controller.getInventorySize, sides.bottom) do
-        local v = inv_controller.getStackInSlot(sides.bottom, e)
-        if not v or (v.name == slot.name and v.damage == slot.damage and v.size < v.maxSize) then
-          local dropAmount = not v and slot.size or math.min(slot.size, (v.maxSize - v.size))
-          common.util.protectedMethod(inv_controller.dropIntoSlot, sides.bottom, e, dropAmount)
-          if dropAmount == slot.size then break end
-        end
-      end
-    end
-  end
-
-  if flags.debug then print("[INFO] Indexing Internal Slots") end
-
-  --Count/Load still occupied slots
-  local availableSlots = invSize
-  for i = 1, invSize do
-    robot.select(i)
-    local slot = inv_controller.getStackInInternalSlot(i)
-    if slot then
-      blockStacks[i] = slot
-      blockStacks[i].toLoad = 0
-      availableSlots = availableSlots - 1
-    end
-  end
-
-  if flags.debug then print("[INFO] Available slots: " .. availableSlots) end
-  if flags.debug then print("[INFO] Generating future block map") end
-
-  --Find which blocks will be used next and fill up remaining slots with those
-  local full = false
-  for y = offset.y, reactor.size.y do
-    for z = offset.z, reactor.size.z do
-      for x = offset.x, reactor.size.x do
-        local block = reactor.map[reactor.blocks[x][y][z]]
-        local loaded = false
-        if block then
-          for i = 1, invSize do
-            if blockStacks[i] then
-              if blockStacks[i].name == block.name and blockStacks[i].damage == block.damage and (blockStacks[i].size + blockStacks[i].toLoad) <= blockStacks[i].maxSize then
-                blockStacks[i].toLoad = blockStacks[i].toLoad + 1
-                loaded = true
-              end
-            else
-              blockStacks[i] = {name = block.name, damage = block.damage, size = 0, maxSize = 64, toLoad = 1}
-              loaded = true
-            end
-            if loaded then break end
-          end
-          full = not loaded
-        end
-        if full then break end
-      end
-      if full then break end
-    end
-    if full then break end
-  end
-
-  if flags.debug then print("[INFO] Loading Inventory") end
-
-  --Fill up all slots to max from external inv
-  for i = 1, invSize do
-    local slot = blockStacks[i]
-    robot.select(i)
-    if slot then
-      local toLoad = math.min(slot.maxSize - slot.size, slot.toLoad)
-      if toLoad > 0 then
-        if flags.debug then print("[INFO] Looking for " .. toLoad .. " " .. common.util.getBlockName(slot, reactor.map_inverse)) end
-        for e = 1, common.util.protectedMethod(inv_controller.getInventorySize, sides.bottom) do
-          if toLoad <= 0 then break end
-          local v = inv_controller.getStackInSlot(sides.bottom, e)
-          if v and slot.name == v.name and slot.damage == v.damage then
-            toLoad = toLoad - common.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, e, toLoad)
-          end
-        end
-      end
-    end
-  end
-
-  if flags.debug then print("[INFO] Done Loading Inventory") end
-
-  robot.select(1) --go back to first slot
-end
-
-local function getBlock(block, offset, reactor)
-
-  local currentSlot = inv_controller.getStackInInternalSlot()
-
-  if not block then return end --Air/nil
-
-  --Check if block is in current slot
-  if currentSlot and currentSlot.name == block.name and currentSlot.damage == block.damage then
-    if flags.debug then print("[INFO] Found block in slot") end
-    common.util.protectedPlaceBlock()
-    return
-  end
-
-  if flags.debug then print("[INFO] Block not in current slot, looking in local inventory") end
-
-  --Check if block is in robot inventory
-  for i = 1, robot.inventorySize() do
-    currentSlot = inv_controller.getStackInInternalSlot(i)
-    if currentSlot and currentSlot.name == block.name and currentSlot.damage == block.damage then
-      robot.select(i)
-      common.util.protectedPlaceBlock()
-      return
-    end
-  end
-
-  if flags.debug then print("[INFO] Block not found in local inventory, going back to stock up") end
-
-  --Repeat block fetch until block is placed or user exits
-  while true do
-    --Go back to base chest
-    robot.setLightColor(0xffff00)
-    common.movement.protectedMove(robot.back, offset.x - 1)
-    common.movement.protectedTurn(robot.turnRight)
-    common.movement.protectedMove(robot.back, offset.z - 1)
-    common.movement.protectedTurn(robot.turnLeft)
-    common.movement.protectedMove(robot.back, 1)
-    common.movement.protectedMove(robot.down, offset.y - 1)
-
-    --Stock up
-    stockUp(offset, reactor)
-
-    --Do the same moves, in reverse!
-    common.movement.protectedMove(robot.up, offset.y - 1)
-    common.movement.protectedMove(robot.forward, 1)
-    common.movement.protectedTurn(robot.turnRight)
-    common.movement.protectedMove(robot.forward, offset.z - 1)
-    common.movement.protectedTurn(robot.turnLeft)
-    common.movement.protectedMove(robot.forward, offset.x - 1)
-    robot.setLightColor(0x00ff00)
-
-    --Again, check if block is in local inv
-    for i = 1, robot.inventorySize() do
-      currentSlot = inv_controller.getStackInInternalSlot(i)
-      if currentSlot and currentSlot.name == block.name and currentSlot.damage == block.damage then
-        robot.select(i)
-        common.util.protectedPlaceBlock()
-        return
-      end
-    end
-
-    common.util.errorState("Could not find " .. common.util.getBlockName(block, reactor.map_inverse))
-  end
-end
-
 local function build(reactor)
 
   --set robot color to active
   robot.setLightColor(0x00ff00)
 
   --stock up
-  stockUp(reactor.startOffset, reactor)
+  common.inventory.stockUp(reactor.startOffset, reactor)
 
   --move to start offset
   common.movement.protectedMove(robot.up, reactor.startOffset.y - 1)
@@ -404,7 +211,7 @@ local function build(reactor)
       for x = reactor.startOffset.x, reactor.size.x do
         local block = reactor.blocks[x][y][z]
         if flags.debug then print(string.format("[BLOCK] x: %d, y: %d, z: %d =>", x, y, z) .. common.util.getBlockName(reactor.map[block], reactor.map_inverse)) end
-        getBlock(reactor.map[block], {x = x, y = y, z = z}, reactor)
+        common.inventory.getBlock(reactor.map[block], {x = x, y = y, z = z}, reactor)
         if x < reactor.size.x then common.movement.nextBlock() end
       end
       if z < reactor.size.z then common.movement.nextLine(reactor.size.x - 1) end
@@ -452,5 +259,5 @@ end
 if flags.outline then
   common.movement.traceOutline(reactor)
 else
-  build(reactor)
+  common.util.time(build, reactor)
 end
