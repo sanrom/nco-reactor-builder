@@ -1,6 +1,6 @@
 --[[
 NCO Reactor Builder by Sanrom
-v0.3.2
+v0.4.0
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
