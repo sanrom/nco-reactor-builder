@@ -101,7 +101,7 @@ end
 
 function module.util.time(f, ...)
   local startTime = computer.uptime()
-  f(arg)
+  f(...)
   if module.flags.debug then print(string.format("[INFO] Time elapsed: %.2f", computer.uptime() - startTime)) end
 end
 
@@ -297,15 +297,15 @@ function module.inventory.stockUp(offset, multiblock)
   for e = 1, externalInvSize do
     local searchSlot = inv_controller.getStackInSlot(sides.bottom, e)
     if module.flags.debug and searchSlot then print("[INFO] Looking at " .. searchSlot.size .. " " .. module.util.getBlockName(searchSlot, multiblock.map_inverse)) end
-    for i = 1, invSize do
-      local slot = blockStacks[i]
-      if slot then
-        local toLoad = math.min(slot.maxSize - slot.size, slot.toLoad)
-        if toLoad > 0 then
-          if searchSlot and slot.name == searchSlot.name and slot.damage == searchSlot.damage then
-            toLoad = toLoad - module.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, e, toLoad)
+    if searchSlot then
+      for i = 1, invSize do
+        local slot = blockStacks[i]
+        if slot and slot.name == searchSlot.name and slot.damage == searchSlot.damage then
+          local toLoad = math.min(slot.maxSize - slot.size, slot.toLoad)
+          if toLoad > 0 then
+            slot.toLoad = slot.toLoad - module.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, e, toLoad)
+            if slot.toLoad <= 0 then break end
           end
-          if toLoad <= 0 then break end
         end
       end
     end
