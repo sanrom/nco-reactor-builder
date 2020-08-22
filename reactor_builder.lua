@@ -59,6 +59,8 @@ local function loadArgs(...)
   if ops.l or ops.pauseOnLayer then
     flags.pauseOnLayer = true
   end
+
+  common.flags.setFlags(flags)
   
   return args
 end

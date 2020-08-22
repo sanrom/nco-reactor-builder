@@ -93,6 +93,13 @@ function module.util.protectedMethod(method, ...)
   return res
 end
 
+--FLAGS
+
+function module.flags.setFlags(flags)
+  module.flags = nil
+  module.flags = flags
+end
+
 --MOVEMENT
 
 function module.movement.protectedMove(move, steps)
@@ -242,9 +249,17 @@ function module.inventory.stockUp(offset, multiblock)
     if full then break end
   end
 
+  if module.flags.debug then print("[INFO] Sorting blockmap") end
+
+  table.sort(blockStacks, function(a, b)
+    return a.toLoad > b.toLoad
+  end
+  )
+
   if module.flags.debug then print("[INFO] Loading Inventory") end
 
   --Fill up all slots to max from external inv
+  local lastPos = 0
   for i = 1, invSize do
     local slot = blockStacks[i]
     robot.select(i)
@@ -252,11 +267,16 @@ function module.inventory.stockUp(offset, multiblock)
       local toLoad = math.min(slot.maxSize - slot.size, slot.toLoad)
       if toLoad > 0 then
         if module.flags.debug then print("[INFO] Looking for " .. toLoad .. " " .. module.util.getBlockName(slot, multiblock.map_inverse)) end
-        for e = 1, module.util.protectedMethod(inv_controller.getInventorySize, sides.bottom) do
-          if toLoad <= 0 then break end
-          local v = inv_controller.getStackInSlot(sides.bottom, e)
-          if v and slot.name == v.name and slot.damage == v.damage then
-            toLoad = toLoad - module.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, e, toLoad)
+        local externalInvSize = module.util.protectedMethod(inv_controller.getInventorySize, sides.bottom)
+        for e = 1, externalInvSize do
+          local searchPos = (e + lastPos) % externalInvSize
+          local searchSlot = inv_controller.getStackInSlot(sides.bottom, searchPos)
+          if searchSlot and slot.name == searchSlot.name and slot.damage == searchSlot.damage then
+            toLoad = toLoad - module.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, searchPos, toLoad)
+          end
+          if toLoad <= 0 then
+            lastPos = searchPos - 1
+            break
           end
         end
       end
@@ -270,9 +290,9 @@ end
 
 function module.inventory.getBlock(block, offset, multiblock)
 
-  local currentSlot = inv_controller.getStackInInternalSlot()
-
   if not block then return end --Air/nil
+
+  local currentSlot = inv_controller.getStackInInternalSlot()
 
   --Check if block is in current slot
   if currentSlot and currentSlot.name == block.name and currentSlot.damage == block.damage then

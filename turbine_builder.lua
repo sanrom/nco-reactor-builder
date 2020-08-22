@@ -66,6 +66,8 @@ local function loadArgs(...)
   if ops["glass-front"] then flags.glass.front = true end
   if ops["glass-back"] then flags.glass.back = true end
 
+  common.flags.setFlags(flags)
+
   return args
 end
 
