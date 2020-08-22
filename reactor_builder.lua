@@ -26,7 +26,7 @@ local inv_controller = component.inventory_controller
 local flags = {}
 
 local id_map = {[1] = "fissionSFR", [2] = "fissionMSR"}
-local blockmap_paths = {[1] = "rblib/blockmaps/overhaulSFR.map", [2] = "rblib/blockmaps/overhaulMSR.map"}
+local blockmap_paths = {[1] = "overhaulSFR", [2] = "overhaulMSR"}
 
 --UTIL
 
@@ -102,10 +102,12 @@ local function loadReactor(filename, startOffset)
     return nil, "ID not valid!"
 
   --Check format
-  elseif not configs[id].compact then
-    return nil, "Only compact format is supported right now. Other formats will be added soon"
+  elseif configs[id].id == 3 then
+    return nil, "This is a turbine, please use turbine_builder instead"
   elseif configs[id].id < 1 or configs[id].id > 2 then
     return nil, "Only Overhaul SFRs and MSRs are supported right now. Other types of reactors will be added soon"
+  elseif not configs[id].compact then
+    return nil, "Only compact format is supported right now. Other formats will be added soon"
   end
 
   --Generate ID map

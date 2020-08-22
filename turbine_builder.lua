@@ -24,7 +24,7 @@ local inv_controller = component.inventory_controller
 
 local flags = {}
 
-local blockmap_paths = {blocks = "rblib/blockmaps/overhaulTurbineBlocks.map", blades = "rblib/blockmaps/overhaulTurbineBlades.map"}
+local blockmap_path = "overhaulTurbine"
 
 --UTIL
 
@@ -113,13 +113,13 @@ local function loadTurbine(filename, startOffset)
   end
 
   --Generate ID map for coils
-  local blockMap = common.util.blockMapLoad(blockmap_paths.blocks)
+  local blockMap = common.util.blockMapLoad(blockmap_path)
 
-  turbine.map[1] = blockMap["Turbine Casing"]
+  turbine.map[1] = blockMap["Turbine Casing"] or error("Missing map entry: Turbine Casing")
   turbine.map[1].count = 0
-  turbine.map[2] = blockMap["Turbine Glass"]
+  turbine.map[2] = blockMap["Turbine Glass"] or error("Missing map entry: Turbine Glass")
   turbine.map[2].count = 0
-  turbine.map[3] = blockMap["Rotor Shaft"]
+  turbine.map[3] = blockMap["Rotor Shaft"] or error("Missing map entry: Rotor Shaft")
   turbine.map[3].count = 0
 
   local coilOffset = #turbine.map
@@ -134,12 +134,12 @@ local function loadTurbine(filename, startOffset)
 
   --blades
   local bladeOffset = #turbine.map
-  local bladeMap = common.util.blockMapLoad(blockmap_paths.blades)
+  -- local bladeMap = common.util.blockMapLoad(blockmap_paths.blades)
   for i, v in ipairs(configs.configuration.overhaul.turbine.blades) do
-    if not bladeMap[v.name] then
+    if not blockMap[v.name] then
       error("Missing map entry: " .. v.name)
     else
-      turbine.map[bladeOffset + i] = bladeMap[v.name]
+      turbine.map[bladeOffset + i] = blockMap[v.name]
       turbine.map[bladeOffset + i].count = 0 --Init count of blades to 0
     end
   end

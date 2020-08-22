@@ -3,6 +3,7 @@ NCO Reactor Builder Common Stuff by Sanrom
 --]]
 
 local robot = require("robot")
+local filesystem = require("filesystem")
 
 local module = {util = {}, movement = {}, flags = {}}
 
@@ -16,16 +17,22 @@ end
 
 --UTIL
 
-function module.util.blockMapLoad(filename)
-  local file = assert(io.open(filename, "r"))
+function module.util.blockMapLoad(baseFileName)
+
   local map = {}
-  for line in file:lines() do
-    local k, v = parseLine(line)
-    if k and v then
-      map[k] = v
+  --Get all maps which share the base file name
+  for filename in filesystem.list("rblib/blockmaps") do
+    if string.find(filename, baseFileName) and string.find(filename, ".map") then
+      local file = assert(io.open(filename, "r"))
+      for line in file:lines() do
+        local k, v = parseLine(line)
+        if k and v then
+          map[k] = v
+        end
+      end
+      file:close()
     end
   end
-  file:close()
   return map
 end
 
