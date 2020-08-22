@@ -93,9 +93,7 @@ function module.util.protectedMethod(method, ...)
   return res
 end
 
---FLAGS
-
-function module.flags.setFlags(flags)
+function module.util.setFlags(flags)
   module.flags = nil
   module.flags = flags
 end

@@ -60,7 +60,7 @@ local function loadArgs(...)
     flags.pauseOnLayer = true
   end
 
-  common.flags.setFlags(flags)
+  common.util.setFlags(flags)
   
   return args
 end
