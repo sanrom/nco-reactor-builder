@@ -6,11 +6,12 @@ local robot = require("robot")
 local filesystem = require("filesystem")
 local component = require("component")
 local sides = require("sides")
+local shell = require("shell")
 
 if not component.isAvailable("inventory_controller") then error("This program requires an inventory controller to run") end
 local inv_controller = component.inventory_controller
 
-local module = {util = {}, movement = {}, flags = {}}
+local module = {util = {}, movement = {}, inventory = {}, flags = {}}
 
 --LOCAL FUNCTIONS
 
@@ -26,9 +27,9 @@ function module.util.blockMapLoad(baseFileName)
 
   local map = {}
   --Get all maps which share the base file name
-  for filename in filesystem.list("rblib/blockmaps") do
+  for filename in filesystem.list(filesystem.concat(shell.getWorkingDirectory(),"rblib/blockmaps")) do
     if string.find(filename, baseFileName) and string.find(filename, ".map") then
-      local file = assert(io.open(filename, "r"))
+      local file = assert(io.open(filesystem.concat(shell.getWorkingDirectory(),"rblib/blockmaps", filename), "r"))
       for line in file:lines() do
         local k, v = parseLine(line)
         if k and v then

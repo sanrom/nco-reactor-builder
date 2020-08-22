@@ -1,7 +1,0 @@
---Rotors
-[Steel Rotor Blade] = nuclearcraft:turbine_rotor_blade_steel:0
-[Extreme Alloy Rotor Blade] = nuclearcraft:turbine_rotor_blade_extreme:0
-[SiC-SiC CMC Rotor Blade] = nuclearcraft:turbine_rotor_blade_sic_sic_cmc:0
-
---Stators
-[Rotor Stator] = nuclearcraft:turbine_rotor_stator:0

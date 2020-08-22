@@ -42,8 +42,8 @@ if ops.d then
     downloadFile("https://dl.dropboxusercontent.com/s/" .. (args[1] or "") .. " " .. (args[2] or "reactor.ncpf"), force)
   end
 elseif ops.a then
-  if string.lower(arg[1]) == "ncouto" then
-    downloadBlockMap(repo .. branch, "overhaulTurbine-NCOUTO.map", force)
+  if string.lower(args[1]) == "ncouto" then
+    downloadBlockMap(repo .. "dev", "overhaulTurbine-NCOUTO.map", force)
   end
 else
 --Create directories if they dont exist

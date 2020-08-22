@@ -1,6 +1,6 @@
 --[[
 NCO Reactor Builder by Sanrom
-v0.3.1
+v0.3.2
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -11,8 +11,6 @@ NCPF Format: https://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-c
 local component = require("component")
 local sides = require("sides")
 local shell = require("shell")
--- local os = require("os")
-local event = require("event")
 
 local parser = require("rblib.config2_parser")
 local common = require("rblib.rb_common")

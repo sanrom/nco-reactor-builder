@@ -6,7 +6,7 @@
 [Lapis Coil] = nuclearcraft:turbine_dynamo_coil_lapis:0
 [Emerald Coil] = nuclearcraft:turbine_dynamo_coil_emerald:0
 [Diamond Coil] = nuclearcraft:turbine_dynamo_coil_diamond:0
-[Villaumite Coil] = nuclearcraft:turbine_dynamo_coil_villiaumite:0
+[Villiaumite Coil] = nuclearcraft:turbine_dynamo_coil_villiaumite:0
 [Fluorite Coil] = nuclearcraft:turbine_dynamo_coil_fluorite:0
 [Carobbiite Coil] = nuclearcraft:turbine_dynamo_coil_carobbiite:0
 [Hard Carbon Coil] = nuclearcraft:turbine_dynamo_coil_hardcarbon:0
@@ -28,9 +28,9 @@
 [Manganese Coil] = nuclearcraft:turbine_dynamo_coil_manganese:0
 [Liquid Nitrogen Coil] = nuclearcraft:turbine_dynamo_coil_nitrogen:0
 [Liquid Helium Coil] = nuclearcraft:turbine_dynamo_coil_helium:0
-[Cryo-stabilized Coil] = nuclearcraft:turbine_dynamo_coil_cryotheum:0
+[Cryo-stablizied Coil] = nuclearcraft:turbine_dynamo_coil_cryotheum:0
 [Enderium Coil] = nuclearcraft:turbine_dynamo_coil_enderium:0
-[Slime Coil] = nuclearcraft:turbine_dynamo_coil_slime:0
+[Slimy Coil] = nuclearcraft:turbine_dynamo_coil_slime:0
 [Tin Coil] = nuclearcraft:turbine_dynamo_coil_tin:0
 
 --QMD Coils
@@ -41,3 +41,14 @@
 [Calcium Coil] = nuclearcraft:turbine_dynamo_coil_calcium:0
 [Nickel Coil] = nuclearcraft:turbine_dynamo_coil_nickel:0
 [Niobium Coil] = nuclearcraft:turbine_dynamo_coil_niobium:0
+
+--Blades
+[Thorium Stator] = nuclearcraft:turbine_rotor_stator_thorium:0
+[DU Stator] = nuclearcraft:turbine_rotor_stator_uranium:0
+
+[Neptunium Blade] = nuclearcraft:turbine_rotor_blade_neptunium:0
+[Plutonium Blade] = nuclearcraft:turbine_rotor_blade_plutonium:0
+[Americium Blade] = nuclearcraft:turbine_rotor_blade_americium:0
+[Curium Blade] = nuclearcraft:turbine_rotor_blade_curium:0
+[Berkelium Blade] = nuclearcraft:turbine_rotor_blade_berkelium:0
+[Californium Blade] = nuclearcraft:turbine_rotor_blade_californium:0
