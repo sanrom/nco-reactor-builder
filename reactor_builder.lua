@@ -248,7 +248,7 @@ local function loadReactor(filename, startOffset)
             if fuelContainer and fuelContainer.sourceId ~= 0 and not fuelContainer.sourcePlaced then
               -- reactor.blocks[x][y][z] = sourceOffset + fuelContainer.sourceId
               reactor.blocks[x][y][z] = 0 --Sources will NOT be placed, instead holes will be placed
-              reactor.map[sourceOffset + fuelContainer.sourceId] = reactor.map[sourceOffset + fuelContainer.sourceId] + 1
+              reactor.map[sourceOffset + fuelContainer.sourceId].count = reactor.map[sourceOffset + fuelContainer.sourceId].count + 1
               fuelContainer.sourcePlaced = true
             end
             break --If blocks LOS then break, no need to search further
@@ -256,7 +256,7 @@ local function loadReactor(filename, startOffset)
         end
       end
 
-      --Priority: left > right > front > back > top > bottom
+      --Order: top => bottom, left => right, front => back
       for y = reactor.size.y, 1, -1 do
         for z = 1, reactor.size.z do
           for x = 1, reactor.size.x do
