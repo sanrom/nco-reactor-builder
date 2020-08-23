@@ -43,7 +43,7 @@ local function loadArgs(...)
     flags.outline = true
   end
 
-  if ops.s or ops.stationary or ops.disableMovement then
+  if ops.S or ops.stationary or ops.disableMovement then
     flags.ghost = true
     flags.disableMovement = true
   end
@@ -118,37 +118,150 @@ local function loadReactor(filename, startOffset)
     else
       reactor.map[i] = blockMap[v.name]
       reactor.map[i].count = 0 --Init count of blocks to 0
+      if v.fuelCell or v.fuelVessel then
+        reactor.map[i].fuelContainer = true
+      end
     end
   end
 
   reactor.map_inverse = common.util.blockMapInverse(blockMap)
 
-  --Load reactor size
-  reactor.size.x = configs[id].size[1]
-  reactor.size.y = configs[id].size[2]
-  reactor.size.z = configs[id].size[3]
+  --If casing mode is enabled
+  if flags.casing then
+
+    --Get additional blocks needed for casing
+    local casingIdOffset = #reactor.map
+    reactor.map[casingIdOffset + 1] = blockMap["Fission Reactor Casing"] or error("Missing map entry: Fission Reactor Casing")
+    reactor.map[casingIdOffset + 1].count = 0
+
+    reactor.map[casingIdOffset + 2] = blockMap["Fission Reactor Glass"] or error("Missing map entry: Fission Reactor Glass")
+    reactor.map[casingIdOffset + 2].count = 0
+
+    --Load reactor size and add two for casing
+    reactor.size.x = configs[id].size[1] + 2
+    reactor.size.y = configs[id].size[2] + 2
+    reactor.size.z = configs[id].size[3] + 2
+
+    --Generate block map
+    local blockPos = 1
+    local fuelContainerPos = 1
+    reactor.blocks = {}
+    reactor.fuelContainers = {}
+    for x = 1, reactor.size.x do
+      reactor.blocks[x] = {}
+      reactor.fuelContainers[x] = {}
+      for y = 1, reactor.size.y do
+        reactor.blocks[x][y] = {}
+        reactor.fuelContainers[x][y] = {}
+        for z = 1, reactor.size.z do
+          --Frame
+          if (x == 1 and (y == 1 or z == 1 or y == reactor.size.y or z == reactor.size.z)) --Check for corners and edges of front
+              or (x == reactor.size.x and (y == 1 or z == 1 or y == reactor.size.y or z == reactor.size.z)) -- back face
+              or (z == 1 and (y == 1 or y == reactor.size.y)) or (z == reactor.size.z and (y == 1 or y == reactor.size.y)) then -- x parallel axes
+            reactor.blocks[x][y][z] = casingIdOffset + 1 --Casing
+            reactor.map[casingIdOffset + 1].count = reactor.map[casingIdOffset + 1].count + 1 --Increment block count
+
+          --Casing Faces
+          elseif x == 1 or y == 1 or z == 1 or x == reactor.size.x or y == reactor.size.y or z == reactor.size.z then
+            local faceBlock = casingIdOffset + 1 --Set face block
+
+            --Glass logic
+            if x == 1 and flags.glass.front then faceBlock = faceBlock + 1 end
+            if x == reactor.size.x and flags.glass.back then faceBlock = faceBlock + 1 end
+            if y == 1 and flags.glass.bottom then faceBlock = faceBlock + 1 end
+            if y == reactor.size.y and flags.glass.top then faceBlock = faceBlock + 1 end
+            if z == 1 and flags.glass.left then faceBlock = faceBlock + 1 end
+            if z == reactor.size.z and flags.glass.right then faceBlock = faceBlock + 1 end
+
+            reactor.blocks[x][y][z] = faceBlock --Casing
+            reactor.map[faceBlock].count = reactor.map[faceBlock].count + 1 --Increment block count
+          
+          --Inside reactor
+          else
+            local blockId = configs[id].blocks[blockPos] --Get the block Id from the ncpf table
+            reactor.blocks[x][y][z] = blockId --Set the block in the 3d array to that id
+            if blockId ~= 0 then
+              reactor.map[blockId].count = reactor.map[blockId].count + 1 --Incremenet the count of type of block by one
+            end --If the block is a fuel container (fuel cell or fuel vessel) get fuel and source
+            if reactor.map[blockId].fuelContainer then
+              reactor.fuelContainers[x][y][z] = {fuelId = configs[id].fuels[fuelContainerPos], sourceId = configs[id].sources[fuelContainerPos], sourcePlaced = false}
+              fuelContainerPos = fuelContainerPos + 1
+            end
+            blockPos = blockPos + 1 --Increment the blockPos by one to read the next block
+          end
+        end
+      end
+    end
+
+    --Source Logic
+    if flags.sources then
+
+      --Get the various blocks needed from blockmap_paths
+      local sourceOffset = #reactor.map
+
+      local function raytrace(axis, flip, x, y, z)
+        local searchStart = flip and reactor.size[axis] - 1 or 2
+        local searchEnd = flip and 2 or reactor.size[axis] - 1
+        local step = flip and -1 or 1
+        for inside = searchStart, searchEnd, step do
+          local insideX = axis == "x" and inside or x
+          local insideY = axis == "y" and inside or y
+          local insideZ = axis == "z" and inside or z
+          if reactor.map[reactor.blocks[insideX][insideY][insideZ]].blocksLOS then
+            local fuelContainer = reactor.fuelContainers[insideX][insideY][insideZ]
+            if fuelContainer and fuelContainer.sourceId ~= 0 and not fuelContainer.sourcePlaced then
+              reactor.blocks[x][y][z] = sourceOffset + fuelContainer.sourceId
+              fuelContainer.sourcePlaced = true
+            end
+            break --If blocks LOS then break, no need to search further
+          end
+        end
+      end
+
+      for x = 1, reactor.size.x do
+        for y = 1, reactor.size.y do
+          for z = 1, reactor.size.z do
+            if z == 1 then raytrace("z", false, x, y, z) end --left
+            if z == reactor.size.z then raytrace("z", true, x, y, z) end --right
+            if x == 1 then raytrace("x", false, x, y, z) end --front
+            if x == reactor.size.x then raytrace("x", true, x, y, z) end --back
+            if y == reactor.size.y then raytrace("y", true, x, y, z) end --top
+            if y == 1 then raytrace("y", false, x, y, z) end --bottom
+          end
+        end
+      end
+
+    end
+
+
+  else
+    --Load reactor size
+    reactor.size.x = configs[id].size[1]
+    reactor.size.y = configs[id].size[2]
+    reactor.size.z = configs[id].size[3]
+
+    --Generate block map
+    local blockPos = 1
+    reactor.blocks = {}
+    for x = 1, reactor.size.x do
+      reactor.blocks[x] = {}
+      for y = 1, reactor.size.y do
+        reactor.blocks[x][y] = {}
+        for z = 1, reactor.size.z do
+          local blockId = configs[id].blocks[blockPos] --Get the block Id from the ncpf table
+          reactor.blocks[x][y][z] = blockId --Set the block in the 3d array to that id
+          if blockId ~= 0 then
+            reactor.map[blockId].count = reactor.map[blockId].count + 1 --Incremenet the count of type of block by one
+          end
+          blockPos = blockPos + 1 --Increment the blockPos by one to read the next block
+        end
+      end
+    end
+  end
 
   --Check startOffset
   for k, v in pairs(reactor.startOffset) do
     if v < 1 or v > reactor.size[k] then return nil, "Start offset is invalid" end
-  end
-
-  --Load reactor blocks
-  local blockPos = 1
-  reactor.blocks = {}
-  for x = 1, reactor.size.x do
-    reactor.blocks[x] = {}
-    for y = 1, reactor.size.y do
-      reactor.blocks[x][y] = {}
-      for z = 1, reactor.size.z do
-        local blockId = configs[id].blocks[blockPos] --Get the block Id from the ncpf table
-        reactor.blocks[x][y][z] = blockId --Set the block in the 3d array to that id
-        if blockId ~= 0 then
-          reactor.map[blockId].count = reactor.map[blockId].count + 1 --Incremenet the count of type of block by one
-        end
-        blockPos = blockPos + 1 --Increment the blockPos by one to read the next block
-      end
-    end
   end
 
   --Check block count and inv size with user
@@ -239,10 +352,16 @@ SYNTAX: reactor_builder [-d/g/o/s/I/p/l] <filename> [<x> <y> <z>]
 -d/--debug: enable debug mode, prints more to output
 -g/--ghost: enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space and blocks)
 -o/--outline: trace the outline of the reactor before building anything. Robot will move along x, y and z axis and return home
--s/--stationary/--disableMovement: disables robot movement (also enables ghost mode)
+-S/--stationary/--disableMovement: disables robot movement (also enables ghost mode)
 -I/--disableInvCheck: disables the inventory check
 -p/--disablePrompts: disables all prompts, defaulting reactor ID to 1. Useful for running programs into output files. If in an error state, will always exit the program
 -l/--pauseOnLayer: pauses the robot on each layer to allow manually filtering cells
+
+-c/--casing: adds casing to reactor. Finished reactor will be 2 blocks larger in each dimension than what is stated
+--glass: Use glass for front, back, sides and top faces of reactor. Equivalent to using --glass-front --glass-back --glass-top --glass-left --glass-right
+--glass-all: Use glass for all faces of the reactor.
+--glass-{front|back|top|bottom|left|right}: Use glass instead of wall for specified reactor face.
+-s/--sources: Automatically places neutron sources where they are required. Complex algorithm which may place sources on all six sides of reactor, depending on where they are required
 --]]
 
 local args = loadArgs(...)
