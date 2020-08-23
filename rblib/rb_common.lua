@@ -305,9 +305,9 @@ function module.inventory.getBlock(block, offset, multiblock)
     return
   end
 
-  --If first slot is empty, shuffle blocks over by one
+  --If first slot is empty, shuffle blocks over by one ONCE. This stops infinite loops or shuffling over a single block 10 spaces
   currentSlot = inv_controller.getStackInInternalSlot(1)
-  while not currentSlot do
+  if not currentSlot then
     for i = 2, robot.inventorySize() do
       robot.select(i)
       robot.transferTo(i - 1)

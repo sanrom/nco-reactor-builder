@@ -141,6 +141,7 @@ local function loadReactor(filename, startOffset)
       error("Missing map entry: " .. v.name)
     else
       reactor.map[i] = blockMap[v.name]
+      reactor.map[i].blocksLOS = v.blocksLOS
       reactor.map[i].count = 0 --Init count of blocks to 0
       if v.fuelCell or v.fuelVessel then
         reactor.map[i].fuelContainer = true
@@ -157,6 +158,7 @@ local function loadReactor(filename, startOffset)
       else
         reactor.map[sourceOffset + i] = blockMap[v.name]
         reactor.map[sourceOffset + i].count = 0 --Init count of blades to 0
+        reactor.map[sourceOffset + i].replace = true
       end
     end
   end
@@ -241,10 +243,12 @@ local function loadReactor(filename, startOffset)
           local insideX = axis == "x" and inside or x
           local insideY = axis == "y" and inside or y
           local insideZ = axis == "z" and inside or z
-          if reactor.map[reactor.blocks[insideX][insideY][insideZ]].blocksLOS then
+          if reactor.map[reactor.blocks[insideX][insideY][insideZ]] and reactor.map[reactor.blocks[insideX][insideY][insideZ]].blocksLOS then
             local fuelContainer = reactor.fuelContainers[insideX][insideY][insideZ]
             if fuelContainer and fuelContainer.sourceId ~= 0 and not fuelContainer.sourcePlaced then
-              reactor.blocks[x][y][z] = sourceOffset + fuelContainer.sourceId
+              -- reactor.blocks[x][y][z] = sourceOffset + fuelContainer.sourceId
+              reactor.blocks[x][y][z] = 0 --Sources will NOT be placed, instead holes will be placed
+              reactor.map[sourceOffset + fuelContainer.sourceId] = reactor.map[sourceOffset + fuelContainer.sourceId] + 1
               fuelContainer.sourcePlaced = true
             end
             break --If blocks LOS then break, no need to search further
@@ -252,15 +256,16 @@ local function loadReactor(filename, startOffset)
         end
       end
 
-      for x = 1, reactor.size.x do
-        for y = 1, reactor.size.y do
-          for z = 1, reactor.size.z do
-            if z == 1 then raytrace("z", false, x, y, z) end --left
-            if z == reactor.size.z then raytrace("z", true, x, y, z) end --right
+      --Priority: left > right > front > back > top > bottom
+      for y = reactor.size.y, 1, -1 do
+        for z = 1, reactor.size.z do
+          for x = 1, reactor.size.x do
             if x == 1 then raytrace("x", false, x, y, z) end --front
             if x == reactor.size.x then raytrace("x", true, x, y, z) end --back
-            if y == reactor.size.y then raytrace("y", true, x, y, z) end --top
             if y == 1 then raytrace("y", false, x, y, z) end --bottom
+            if y == reactor.size.y then raytrace("y", true, x, y, z) end --top
+            if z == 1 then raytrace("z", false, x, y, z) end --left
+            if z == reactor.size.z then raytrace("z", true, x, y, z) end --right
           end
         end
       end
@@ -395,7 +400,7 @@ SYNTAX: reactor_builder [-d/g/o/s/I/p/l] <filename> [<x> <y> <z>]
 --glass: Use glass for front, back, sides and top faces of reactor. Equivalent to using --glass-front --glass-back --glass-top --glass-left --glass-right
 --glass-all: Use glass for all faces of the reactor.
 --glass-{front|back|top|bottom|left|right}: Use glass instead of wall for specified reactor face.
--s/--sources: Automatically places neutron sources where they are required. Complex algorithm which may place sources on all six sides of reactor, depending on where they are required
+-s/--sources: Automatically calculates where neutron sources should be placed and leaves a gap in the casing there.
 --]]
 
 local args = loadArgs(...)
