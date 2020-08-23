@@ -2,6 +2,8 @@
 [Fuel Cell] = nuclearcraft:solid_fission_cell:0
 [Neutron Irradiator] = nuclearcraft:fission_irradiator:0
 [Conductor] = nuclearcraft:fission_conductor:0
+[Fission Reactor Casing] = nuclearcraft:fission_casing:0
+[Fission Reactor Glass] = nuclearcraft:fission_glass:0
 
 --Reflectors
 [Beryllium-Carbon Reflector] = nuclearcraft:fission_reflector:0
@@ -9,6 +11,11 @@
 
 --Shields
 [Boron-Silver Neutron Shield] = nuclearcraft:fission_shield:0
+
+--Sources
+[Ra-Be] = nuclearcraft:fission_source:0
+[Po-Be] = nuclearcraft:fission_source:1
+[Cf-252] = nuclearcraft:fission_source:2
 
 --Moderators
 [Graphite Moderator] = nuclearcraft:ingot_block:8

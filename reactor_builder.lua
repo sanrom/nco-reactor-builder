@@ -60,6 +60,30 @@ local function loadArgs(...)
     flags.pauseOnLayer = true
   end
 
+  if ops.c or ops.casing then
+    flags.casing = true
+  end
+
+  flags.glass = {}
+  if ops.glass then
+    flags.glass.front = true
+    flags.glass.back = true
+    flags.glass.top = true
+    flags.glass.left = true
+    flags.glass.right = true
+  end
+
+  if ops["glass-top"] then flags.glass.top = true end
+  if ops["glass-bottom"] then flags.glass.bottom = true end
+  if ops["glass-front"] then flags.glass.front = true end
+  if ops["glass-back"] then flags.glass.back = true end
+  if ops["glass-left"] then flags.glass.front = true end
+  if ops["glass-right"] then flags.glass.back = true end
+
+  if ops.s or ops.sources then
+    flags.sources = true
+  end
+
   common.util.setFlags(flags)
   
   return args
@@ -124,6 +148,19 @@ local function loadReactor(filename, startOffset)
     end
   end
 
+  --Load neutron sources if they are required
+  local sourceOffset = #reactor.map
+  if flags.sources then
+    for i, v in ipairs(configs.configuration.overhaul[id_map[configs[id].id]].sources) do
+      if not blockMap[v.name] then
+        error("Missing map entry: " .. v.name)
+      else
+        reactor.map[sourceOffset + i] = blockMap[v.name]
+        reactor.map[sourceOffset + i].count = 0 --Init count of blades to 0
+      end
+    end
+  end
+
   reactor.map_inverse = common.util.blockMapInverse(blockMap)
 
   --If casing mode is enabled
@@ -182,10 +219,10 @@ local function loadReactor(filename, startOffset)
             reactor.blocks[x][y][z] = blockId --Set the block in the 3d array to that id
             if blockId ~= 0 then
               reactor.map[blockId].count = reactor.map[blockId].count + 1 --Incremenet the count of type of block by one
-            end --If the block is a fuel container (fuel cell or fuel vessel) get fuel and source
-            if reactor.map[blockId].fuelContainer then
-              reactor.fuelContainers[x][y][z] = {fuelId = configs[id].fuels[fuelContainerPos], sourceId = configs[id].sources[fuelContainerPos], sourcePlaced = false}
-              fuelContainerPos = fuelContainerPos + 1
+              if reactor.map[blockId].fuelContainer then --If the block is a fuel container (fuel cell or fuel vessel) get fuel and source
+                reactor.fuelContainers[x][y][z] = {fuelId = configs[id].fuels[fuelContainerPos], sourceId = configs[id].sources[fuelContainerPos], sourcePlaced = false}
+                fuelContainerPos = fuelContainerPos + 1
+              end
             end
             blockPos = blockPos + 1 --Increment the blockPos by one to read the next block
           end
@@ -195,9 +232,6 @@ local function loadReactor(filename, startOffset)
 
     --Source Logic
     if flags.sources then
-
-      --Get the various blocks needed from blockmap_paths
-      local sourceOffset = #reactor.map
 
       local function raytrace(axis, flip, x, y, z)
         local searchStart = flip and reactor.size[axis] - 1 or 2

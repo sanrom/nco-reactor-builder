@@ -306,10 +306,11 @@ function module.inventory.getBlock(block, offset, multiblock)
   end
 
   --If first slot is empty, shuffle blocks over by one
+  currentSlot = inv_controller.getStackInInternalSlot(1)
   while not currentSlot do
-    for i = 1, robot.inventorySize() - 1 do
+    for i = 2, robot.inventorySize() do
       robot.select(i)
-      robot.transferTo(i + 1)
+      robot.transferTo(i - 1)
     end
     robot.select(1)
     currentSlot = inv_controller.getStackInInternalSlot(1)
