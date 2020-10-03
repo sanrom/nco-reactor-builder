@@ -1,6 +1,6 @@
 --[[
 NCO Reactor Builder by Sanrom
-v0.3.2
+v0.3.3
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -355,12 +355,13 @@ local function build(reactor)
   common.movement.protectedTurn(robot.turnRight)
   common.movement.protectedMove(robot.forward, reactor.startOffset.z - 1)
   common.movement.protectedTurn(robot.turnLeft)
-  common.movement.protectedMove(robot.forward, reactor.startOffset.x - 2)
+  common.movement.protectedMove(robot.forward, reactor.startOffset.x - 1)
 
   --build reactor
   for y = reactor.startOffset.y, reactor.size.y do
     for z = reactor.startOffset.z, reactor.size.z do
       for x = reactor.startOffset.x, reactor.size.x do
+        reactor.startOffset = {x = 1, y = 1, z = 1} --reset the start offset after having started from there
         local block = reactor.blocks[x][y][z]
         if flags.debug then print(string.format("[BLOCK] x: %d, y: %d, z: %d =>", x, y, z) .. common.util.getBlockName(reactor.map[block], reactor.map_inverse)) end
         common.inventory.getBlock(reactor.map[block], {x = x, y = y, z = z}, reactor)

@@ -83,14 +83,34 @@ function module.util.protectedPlaceBlock()
   end
 end
 
-function module.util.protectedMethod(method, ...)
+function module.util.protectedGetInventorySize(side)
   local res, msg
   repeat
-    res, msg = method(...)
+    res, msg = inv_controller.getInventorySize(side)
     if not res then
-      module.util.errorState(msg)
+      module.util.errorState("Error getting inventory size, inventory might not be present: " .. msg)
     end
   until res
+  return res
+end
+
+function module.util.protectedSuckFromSlot(side, slot, amount)
+  local res, msg
+  repeat
+    res, msg = inv_controller.suckFromSlot(side, slot, amount)
+    if not res then
+      module.util.errorState("Error taking block from slot: " .. msg)
+    end
+  until res
+  return res
+end
+
+function module.util.protectedDropIntoSlot(side, slot, amount)
+  local res, msg
+  res, msg = inv_controller.getInventorySize(side, slot, amount)
+  if not res then
+    module.util.errorState("Error dropping block into inventory: " .. msg)
+  end
   return res
 end
 
@@ -115,7 +135,7 @@ function module.movement.protectedMove(move, steps)
       repeat
         res, msg = move()
         if not res then
-          module.util.errorState(msg)
+          module.util.errorState("Error while moving: " .. msg)
         end
       until res
     end
@@ -128,7 +148,7 @@ function module.movement.protectedTurn(turn)
     repeat
       res, msg = turn()
       if not res then
-        module.util.errorState(msg)
+        module.util.errorState("Error while turning: " .. msg)
       end
     until res
   end
@@ -193,12 +213,13 @@ function module.inventory.stockUp(offset, multiblock)
     robot.select(i)
     local slot = inv_controller.getStackInInternalSlot(i)
     if slot then
-      for e = 1, module.util.protectedMethod(inv_controller.getInventorySize, sides.bottom) do
+      for e = 1, module.util.protectedGetInventorySize(sides.bottom) do
         local v = inv_controller.getStackInSlot(sides.bottom, e)
         if not v or (v.name == slot.name and v.damage == slot.damage and v.size < v.maxSize) then
           local dropAmount = not v and slot.size or math.min(slot.size, (v.maxSize - v.size))
-          module.util.protectedMethod(inv_controller.dropIntoSlot, sides.bottom, e, dropAmount)
-          if dropAmount == slot.size then break end
+          module.util.protectedDropIntoSlot(sides.bottom, e, dropAmount)
+          slot = inv_controller.getStackInInternalSlot(i)
+          if slot.size == 0 then break end
         end
       end
     end
@@ -264,7 +285,34 @@ function module.inventory.stockUp(offset, multiblock)
   if module.flags.debug then print("[INFO] Loading Inventory") end
 
   --Fill up all slots to max from external inv
-  local externalInvSize = module.util.protectedMethod(inv_controller.getInventorySize, sides.bottom)
+  local externalInvSize = module.util.protectedGetInventorySize(sides.bottom)
+
+  -- if invSize > externalInvSize then
+
+  --   --Loop over external for each internal
+  --   local lastPos = 0
+  --   for i = 1, invSize do
+  --     local slot = blockStacks[i]
+  --     robot.select(i)
+  --     if slot then
+  --       local toLoad = math.min(slot.maxSize - slot.size, slot.toLoad)
+  --       if toLoad > 0 then
+  --         if module.flags.debug then print("[INFO] Looking for " .. toLoad .. " " .. module.util.getBlockName(slot, multiblock.map_inverse)) end
+  --         for e = 1, externalInvSize do
+  --           local searchPos = ((e - 1 + lastPos) % externalInvSize) + 1
+  --           local searchSlot = inv_controller.getStackInSlot(sides.bottom, searchPos)
+  --           if searchSlot and slot.name == searchSlot.name and slot.damage == searchSlot.damage then
+  --             toLoad = toLoad - module.util.protectedSuckFromSlot(sides.bottom, searchPos, toLoad)
+  --           end
+  --           if toLoad <= 0 then
+  --             lastPos = searchPos - 1
+  --             break
+  --           end
+  --         end
+  --       end
+  --     end
+  --   end
+  -- end
 
   --Loop over internal for each external
   for e = 1, externalInvSize do
@@ -278,7 +326,7 @@ function module.inventory.stockUp(offset, multiblock)
           if module.flags.debug then print("[INFO] Looking for " .. toLoad .. " " .. module.util.getBlockName(slot, multiblock.map_inverse)) end
           if toLoad > 0 then
             robot.select(i)
-            slot.toLoad = slot.toLoad - module.util.protectedMethod(inv_controller.suckFromSlot, sides.bottom, e, toLoad)
+            slot.toLoad = slot.toLoad - module.util.protectedSuckFromSlot(sides.bottom, e, toLoad)
             searchSlot = inv_controller.getStackInSlot(sides.bottom, e)
             if slot.toLoad <= 0 then break end
           end

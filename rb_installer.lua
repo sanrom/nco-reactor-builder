@@ -55,10 +55,10 @@ else
   end
 
   --Always force download scripts to allow updating
-  downloadFile(repo .. branch .. "/rblib/config2_parser.lua rblib/config2_parser.lua", true)
-  downloadFile(repo .. branch .. "/rblib/rb_common.lua rblib/rb_common.lua", true)
-  downloadFile(repo .. branch .. "/reactor_builder.lua reactor_builder.lua", true)
-  downloadFile(repo .. branch .. "/turbine_builder.lua turbine_builder.lua", true)
+  downloadFile(repo .. branch .. "/rblib/config2_parser.lua rblib/config2_parser.lua", force)
+  downloadFile(repo .. branch .. "/rblib/rb_common.lua rblib/rb_common.lua", force)
+  downloadFile(repo .. branch .. "/reactor_builder.lua reactor_builder.lua", force)
+  downloadFile(repo .. branch .. "/turbine_builder.lua turbine_builder.lua", force)
 
   --Download default blockmaps
   downloadBlockMap(repo .. branch, "overhaulSFR.map", force)

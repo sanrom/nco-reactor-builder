@@ -241,9 +241,9 @@ function util.readFloat(file)
     return 0/0
   else
 
-    s = ((int >> 31) == 0) and 1 or -1
-    e = ((int >> 23) & 0xff)
-    m = (e == 0) and (int & 0x7fffff) << 1 or (int & 0x7fffff) | 0x800000
+    local s = ((int >> 31) == 0) and 1 or -1
+    local e = ((int >> 23) & 0xff)
+    local m = (e == 0) and (int & 0x7fffff) << 1 or (int & 0x7fffff) | 0x800000
 
     return s * m * 2 ^ (e - 150)
   end

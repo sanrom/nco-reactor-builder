@@ -1,6 +1,6 @@
 --[[
 NCO Turbine Builder by Sanrom
-v0.3.2
+v0.3.3
 
 LINKS:
 NCO: https://github.com/turbodiesel4598/NuclearCraft
@@ -299,12 +299,13 @@ local function build(turbine)
   common.movement.protectedTurn(robot.turnRight)
   common.movement.protectedMove(robot.forward, turbine.startOffset.z - 1)
   common.movement.protectedTurn(robot.turnLeft)
-  common.movement.protectedMove(robot.forward, turbine.startOffset.x - 2)
+  common.movement.protectedMove(robot.forward, turbine.startOffset.x - 1)
 
   --build turbine
   for y = turbine.startOffset.y, turbine.size.y do
     for z = turbine.startOffset.z, turbine.size.z do
       for x = turbine.startOffset.x, turbine.size.x do
+        turbine.startOffset = {x = 1, y = 1, z = 1} --reset the start offset after having started from there
         local block = turbine.blocks[x][y][z]
         if flags.debug then print(string.format("[BLOCK] x: %d, y: %d, z: %d =>", x, y, z) .. common.util.getBlockName(turbine.map[block], turbine.map_inverse)) end
         common.inventory.getBlock(turbine.map[block], {x = x, y = y, z = z}, turbine)
