@@ -35,7 +35,7 @@ local function loadArgs(...)
     flags.debug = true
   end
 
-  if ops.g or ops.ghost then
+  if ops.G or ops.ghost then
     flags.ghost = true
   end
 
@@ -65,7 +65,7 @@ local function loadArgs(...)
   end
 
   flags.glass = {}
-  if ops.glass then
+  if ops.g or ops.glass then
     flags.glass.front = true
     flags.glass.back = true
     flags.glass.top = true
@@ -390,7 +390,7 @@ SYNTAX: reactor_builder [-d/g/o/s/I/p/l] <filename> [<x> <y> <z>]
 [<x> <y> <z>]: start offset of reactor: useful if program crashed and you want to finish the reactor from x, y, z
 
 -d/--debug: enable debug mode, prints more to output
--g/--ghost: enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space and blocks)
+-G/--ghost: enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space and blocks)
 -o/--outline: trace the outline of the reactor before building anything. Robot will move along x, y and z axis and return home
 -S/--stationary/--disableMovement: disables robot movement (also enables ghost mode)
 -I/--disableInvCheck: disables the inventory check
@@ -398,7 +398,7 @@ SYNTAX: reactor_builder [-d/g/o/s/I/p/l] <filename> [<x> <y> <z>]
 -l/--pauseOnLayer: pauses the robot on each layer to allow manually filtering cells
 
 -c/--casing: adds casing to reactor. Finished reactor will be 2 blocks larger in each dimension than what is stated
---glass: Use glass for front, back, sides and top faces of reactor. Equivalent to using --glass-front --glass-back --glass-top --glass-left --glass-right
+-g/--glass: Use glass for front, back, sides and top faces of reactor. Equivalent to using --glass-front --glass-back --glass-top --glass-left --glass-right
 --glass-all: Use glass for all faces of the reactor.
 --glass-{front|back|top|bottom|left|right}: Use glass instead of wall for specified reactor face.
 -s/--sources: Automatically calculates where neutron sources should be placed and leaves a gap in the casing there.

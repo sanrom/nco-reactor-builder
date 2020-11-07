@@ -14,12 +14,15 @@ in OpenComputers to install the scripts!
 - [ ] ~~Fusion Reactors~~
 - [x] NCPF Files (Thiz Reactor Planner)
 - [ ] JSON Files (Hellrage Reactor Planner)
-- [ ] Casing for Reactors
+- [x] Casing for Reactors
 - [x] Casing for Turbines
 - [ ] Automatic cell filtering
+- [x] Automatic source placing*
 - [x] Direct download from Google Drive, Dropbox
 - [x] Support for addons
 - [ ] QMD Added blocks
+
+*Soure placing only leaves holes in the casing, actual source placing coming soon
 
 ## Requirements
 
@@ -80,12 +83,13 @@ Note: this will always force download lua files to update the scripts to the lat
 
 #### Downloading extra files for addons
 
+**Addon support is being redone, no addons will be added or updated until new system is in place**
+
 `rb_installer -a [-f] <addon>`
 
 `<addon>`: name of the addon file to download<br>
 Supported addons:
 - [x] [NCOUTO v0.5](https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine)
-- [] [MoarHeatSinks](https://www.curseforge.com/minecraft/customization/moar-heat-sinks)
 
 #### Cloud Download Utility
 
@@ -99,22 +103,31 @@ Supported addons:
 
 ### Reactor Builder
 
-`reactor_builder [-d/g/o/s/I/p] <filename> [<x> <y> <z>]`
+`reactor_builder [flags] <filename> [<x> <y> <z>]`
 
 `<filename>`: filename of reactor (only ncpf files are supported right now)<br>
 `[<x> <y> <z>]`: start offset of reactor: useful if program crashed and you want to finish the reactor from x, y, z
 
 `-d/--debug`: Enable debug mode, prints additional information<br>
-`-g/--ghost`: Enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space and blocks)<br>
+`-G/--ghost`: Enable ghost mode (robot does all moves, but does not place blocks) (still checks for inventory space and blocks)<br>
 `-o/--outline`: Trace the outline of the reactor before building anything. Robot will move along x, y and z axis and return home<br>
 `-s/--stationary/--disableMovement`: Disables robot movement (also enables ghost mode)<br>
 `-I/--disableInvCheck`: Disables the inventory check<br>
 `-p/--disablePrompts`: Disables all prompts, defaulting reactor ID to 1. Useful for running programs into output files. If in an error state, will always exit the program<br>
 `-l/--pauseOnLayer`: pauses the robot on each layer to allow manually filtering cells
 
+`-c/--casing`: Enables casing placement, reactor will be 2 blocks larger in each dimension than design file to accomodate casing<br>
+**Options below only work if casing placement is enabled (`-c/--casing`)**<br>
+`-g/--glass`: Use glass for front, back, sides and top faces of reactor. Equivalent to using --glass-front --glass-back --glass-top --glass-left --glass-right<br>
+`--glass-all`: Use glass for all faces of the reactor.<br>
+`--glass-{front|back|top|bottom|left|right}`: Use glass instead of wall for specified reactor face.<br>
+`-s/--sources`: Automatically calculates where neutron sources should be placed and leaves a gap in the casing there.<br>
+
+**If you want to use all casing features, run the reactor builder with these flags: `reactor_builder -cgs <filename> [<x> <y> <z>]`**
+
 ### Turbine Builder
 
-`reactor_builder [-d/g/o/s/I/p] <filename> [<x> <y> <z>]`
+`reactor_builder [flags] <filename> [<x> <y> <z>]`
 
 `<filename>`: filename of reactor (only ncpf files are supported right now)<br>
 `[<x> <y> <z>]`: start offset of reactor: useful if program crashed and you want to finish the reactor from x, y, z

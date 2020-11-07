@@ -107,9 +107,9 @@ configTypes[12] = function (file)
   if sizeClass == 0 then
     size = abyte & 0x3f
   elseif sizeClass == 1 then
-    size = ((abyte & 0x3f) << 8) + util.readByte(file)
+    size = ((abyte & 0x3f) << 8) | util.readByte(file)
   elseif sizeClass == 2 then
-    size = ((abyte & 0x3f) << 24) + (util.readByte(file) << 16) + util.readShort(file)
+    size = ((abyte & 0x3f) << 24) | (util.readByte(file) << 16) | (util.readByte(file) << 8) | util.readByte(file)
   elseif sizeClass == 3 then
     size = util.readInt(file)
   end
